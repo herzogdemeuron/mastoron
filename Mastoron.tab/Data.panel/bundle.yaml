@@ -1,0 +1,4 @@
+layout:
+  - CalculateArea[title:Area]
+  - CalculateLevel[title:Level]
+  - ReduceSelection[title:Reduce]

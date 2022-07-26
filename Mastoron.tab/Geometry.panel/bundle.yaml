@@ -1,0 +1,5 @@
+layout:
+  - Mirror[title:Mirror]
+  - ReduceSelection[title:Reduce]
+  - ExtractFloors[title:Floors]
+  - BooleanFloors[title:Boolean]
