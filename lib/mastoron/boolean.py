@@ -18,7 +18,7 @@ class BooleanSketchBased(object):
         filter = revitron.Filter()
         levels = filter.byCategory('Levels').noTypes().getElements()
         intersections = self.getIntersects(elements)
-        idStrings = self.toIdString(intersections)
+        idStrings = self.toIdStrings(intersections)
         groups = self.mergeLists(idStrings)
         groups = self.toElements(groups)
         self.newElements = []
@@ -48,7 +48,7 @@ class BooleanSketchBased(object):
             groups.append(group)
         return groups
 
-    def toIdString(self, nestedList):
+    def toIdStrings(self, nestedList):
         """
         Convert Revit elements to element ids as strings.
 
@@ -137,7 +137,6 @@ class BooleanSketchBased(object):
                                                                 boolType
                                                                 )
         return newSolid
-
 
     def getCurveLoop(self, face):
         """
