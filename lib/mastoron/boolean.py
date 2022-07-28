@@ -24,9 +24,9 @@ class BooleanSketchBased(object):
         self.newElements = []
         for group in groups:
             newSolid = self.makeBoolean(group)
-            face = mastoron.Extractor(newSolid).getBottomFace()
+            face = mastoron.FaceExtractor(newSolid).getBottomFace()
             level = mastoron.Level.getLevel(group[0], levels)
-            curveLoop = self.getCurveLoop(face)
+            curveLoop = mastoron.BorderExtractor(face).getBorder()
             self.newElements.append({'loop': curveLoop, 'level': level})
 
     def getIntersects(self, elements):
@@ -137,23 +137,6 @@ class BooleanSketchBased(object):
                                                                 boolType
                                                                 )
         return newSolid
-
-    def getCurveLoop(self, face):
-        """
-        Gets the edges of a face as a curve loop.
-
-        Args:
-            face (object): A Revit face
-
-        Returns:
-            iList: A Revit curve loop
-        """
-        lines = face.GetEdgesAsCurveLoops()
-        if len(lines) > 1:
-            print('error')
-            return None
-        iList = List[revitron.DB.CurveLoop]([lines[0]])
-        return iList
 
 
 class BooleanFloors(BooleanSketchBased):
