@@ -1,4 +1,4 @@
-# mastoron
+# Mastoron
 
 Massing extension for Revit based on [Revitron](https://github.com/revitron/revitron) for [pyRevit](https://github.com/eirannejad/pyRevit).
 
@@ -9,3 +9,7 @@ Massing extension for Revit based on [Revitron](https://github.com/revitron/revi
 ![](https://img.shields.io/badge/Revit-2022-222222)
 
 > :point_up: Note that this extension is only tested on Revit `2022`, but may as well work on other versions.
+
+## Docs
+
+The Mastoron extensions requires Revitron to be installed on your system. Check out the Revitron [installation instructions](https://revitron.readthedocs.io/en/latest/get-started.html) to get started quickly.
