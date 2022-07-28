@@ -1,4 +1,3 @@
 layout:
-  - ReduceSelection[title:Reduce]
-  - ExtractFloors[title:Floors]
+  - Floors[title:Floors]
   - Boolean[title:Boolean]
