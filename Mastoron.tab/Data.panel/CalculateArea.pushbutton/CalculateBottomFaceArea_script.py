@@ -9,7 +9,7 @@ if len(selection) < 1:
 
 with revitron.Transaction():
     for element in revitron.Selection().get():
-        faces = mastoron.Extractor(element).getBottomFaces()
+        faces = mastoron.FaceExtractor(element).getBottomFaces()
         area = 0
         for face in faces:
             area += face.Area
