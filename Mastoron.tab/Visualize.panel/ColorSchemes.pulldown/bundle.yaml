@@ -1,4 +1,5 @@
 layout:
-  - Visualize[title:Visualize]
+  - ApplyColorScheme[title:Apply Color Scheme]
+  - -----
   - ExportScheme[title:Export Scheme to JSON]
   - LoadScheme[title:Load Scheme from JSON]
