@@ -62,16 +62,20 @@ class ColorScheme:
         self.COLOR_SCHEMES = 'mastoron.colorschemes'
         self.schemes = revitron.DocumentConfigStorage().get(
             self.COLOR_SCHEMES, defaultdict())
-        self.defaultColors = ['#F44336', '#E91E63', '#9C27B0', '#673AB7',
+        self.defaultColors = [
+                            '#F44336', '#E91E63', '#9C27B0', '#673AB7',
                             '#3F51B5', '#2196F3', '#03A9F4', '#00BCD4',
                             '#009688', '#4CAF50', '#8BC34A', '#CDDC39',
                             '#FFEB3B', '#FFC107', '#FF9800', '#FF5722',
-                            '#795548', '#9E9E9E', '#607D8B']
-        self.additionalColors = ['#D32F2F', '#C2185B', '#7B1FA2', '#512DA8',
+                            '#795548', '#9E9E9E', '#607D8B'
+                            ]
+        self.additionalColors = [
+                            '#D32F2F', '#C2185B', '#7B1FA2', '#512DA8',
                             '#303F9F', '#1976D2', '#0288D1', '#0097A7',
                             '#00796B', '#388E3C', '#689F38', '#AFB42B',
                             '#FBC02D', '#FFA000', '#F57C00', '#E64A19',
-                            '#5D4037', '#616161', '#455A64']
+                            '#5D4037', '#616161', '#455A64'
+                            ]
         self.extendedColors = self.defaultColors + self.additionalColors
 
     @staticmethod
