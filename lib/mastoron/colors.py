@@ -62,28 +62,17 @@ class ColorScheme:
         self.COLOR_SCHEMES = 'mastoron.colorschemes'
         self.schemes = revitron.DocumentConfigStorage().get(
             self.COLOR_SCHEMES, defaultdict())
-
-    @staticmethod
-    def generate(schemeName, values):
-        """
-        Generates a new color scheme.
-
-        Args:
-            schemeName (string): The name of the color scheme
-            values (set): The color scheme keys
-
-        Returns:
-            dict: A color scheme: {name: schemeName, data: {value: color}}
-        """
-        colors = ColorRange(len(values)).getHSV()
-        scheme = {}
-        scheme['name'] = schemeName
-        scheme['data'] = {}
-        for value, hsvColor in zip(values, colors):
-            rgbColor = Color.HSVtoRGB(hsvColor)
-            hexColor = Color.RGBtoHEX(rgbColor)
-            scheme['data'][value] = hexColor
-        return scheme
+        self.defaultColors = ['#F44336', '#E91E63', '#9C27B0', '#673AB7',
+                            '#3F51B5', '#2196F3', '#03A9F4', '#00BCD4',
+                            '#009688', '#4CAF50', '#8BC34A', '#CDDC39',
+                            '#FFEB3B', '#FFC107', '#FF9800', '#FF5722',
+                            '#795548', '#9E9E9E', '#607D8B']
+        self.additionalColors = ['#D32F2F', '#C2185B', '#7B1FA2', '#512DA8',
+                            '#303F9F', '#1976D2', '#0288D1', '#0097A7',
+                            '#00796B', '#388E3C', '#689F38', '#AFB42B',
+                            '#FBC02D', '#FFA000', '#F57C00', '#E64A19',
+                            '#5D4037', '#616161', '#455A64']
+        self.extendedColors = self.defaultColors + self.additionalColors
 
     @staticmethod
     def update(colorScheme, values):
@@ -104,6 +93,8 @@ class ColorScheme:
         
         if newValues:
             tempScheme = ColorScheme().generate('tempName', newValues)
+            if not tempScheme:
+                return None
             colorScheme['data'].update(tempScheme['data'])
 
         return colorScheme
@@ -155,6 +146,40 @@ class ColorScheme:
         with open(path, 'r') as f:
             scheme = json.load(f)
 
+        return scheme
+
+    def generate(self, schemeName, values):
+        """
+        Generates a new color scheme.
+
+        Args:
+            schemeName (string): The name of the color scheme
+            values (set): The color scheme keys
+
+        Returns:
+            dict: A color scheme: {name: schemeName, data: {value: color}}
+        """
+        import random
+        if len(values) <= len(self.defaultColors):
+            colors = random.sample(self.defaultColors, len(values))
+        elif len(values) <= len(self.extendedColors):
+            colors = random.sample(self.extendedColors, len(values))
+        elif len(values) <= 99:
+            hsvColors = ColorRange(len(values)).getHSV()
+            colors = []
+            for hsvColor in hsvColors:
+                rgbColor = Color.HSVtoRGB(hsvColor)
+                hexColor = Color.RGBtoHEX(rgbColor)
+                colors.append(hexColor)
+        else:
+            print('Too many values, colors are indistiguishable.')
+            return None
+
+        scheme = {}
+        scheme['name'] = schemeName
+        scheme['data'] = {}
+        for value, color in zip(values, colors):
+            scheme['data'][value] = color
         return scheme
 
     def load(self, schemeName):

@@ -30,7 +30,9 @@ for item in selection:
 
 scheme = ColorScheme().load(schemeName)
 if not scheme:
-    scheme = ColorScheme.generate(schemeName, values)
+    scheme = ColorScheme().generate(schemeName, values)
+    if not scheme:
+        sys.exit()
 elif scheme:
     ColorScheme.update(scheme, values)
 
