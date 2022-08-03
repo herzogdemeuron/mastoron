@@ -97,10 +97,6 @@ class ColorScheme:
         Returns:
             dict: The updated color scheme
         """
-        for key in colorScheme['data'].keys():
-            if key not in values:
-                del colorScheme['data'][key]
-
         newValues = set()
         for value in values:
             if value not in colorScheme['data'].keys():
