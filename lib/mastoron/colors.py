@@ -1,6 +1,7 @@
 import revitron
 import colorsys
 import os
+import json
 from collections import defaultdict
 
 
@@ -121,7 +122,10 @@ class ColorScheme:
         Returns:
             string: The json file
         """
-        import json
+        directory = os.path.dirname(path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+            
         with open(path, 'w') as f:
             json.dump(data, f)
 
@@ -138,7 +142,6 @@ class ColorScheme:
         Returns:
             dict: The color scheme
         """
-        import json
         with open(path, 'r') as f:
             scheme = json.load(f)
 
