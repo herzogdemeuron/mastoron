@@ -10,7 +10,7 @@ for scheme in schemes:
     names.append(scheme['name'])
 
 selection = forms.CommandSwitchWindow.show(sorted(names),
-        message='Visualize parameter:')
+        message='Export Color Scheme:')
 
 if not selection:
     sys.exit()
