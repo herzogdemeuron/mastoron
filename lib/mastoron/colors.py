@@ -33,6 +33,20 @@ class Color:
     def RGBtoHEX(rgb):
         return '%02x%02x%02x' % rgb
 
+    @staticmethod
+    def HEXtoRGB(hex):
+        """
+        Converts a hex color string to rgb.
+
+        Args:
+            hex (sting): The hex color
+
+        Returns:
+            tuple: The rgb color
+        """
+        hex.lstrip('#')
+        return tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
+
 
 class ColorScheme:
     """
@@ -125,7 +139,7 @@ class ColorScheme:
         directory = os.path.dirname(path)
         if not os.path.exists(directory):
             os.makedirs(directory)
-            
+
         with open(path, 'w') as f:
             json.dump(data, f)
 
