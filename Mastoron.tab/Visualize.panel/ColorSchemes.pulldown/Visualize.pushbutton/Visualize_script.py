@@ -36,4 +36,14 @@ elif scheme:
 
 ColorScheme().save(scheme)
 
-# add graphical overrides
+filter = revitron.Filter()
+patternId = filter.byClass('FillPatternElement').noTypes().getElementIds()[0]
+
+with revitron.Transaction():
+    for element in selection:
+        value = _(element).get(schemeName)
+        if str(selectedOption.type) == 'Invalid':
+            value = _(revitron.DOC.GetElement(value)).get('Name')
+        colorHEX = scheme['data'][value]
+        colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
+        mastoron.ElementOverrides(element).set(colorRGB, patternId)
