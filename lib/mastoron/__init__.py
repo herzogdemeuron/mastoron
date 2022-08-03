@@ -4,3 +4,4 @@ from extract import *
 from create import *
 from colors import *
 from parameter import *
+from view import *
