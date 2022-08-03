@@ -1,3 +1,4 @@
 layout:
-  - ExportScheme[title:Export Scheme to JSON]
   - Visualize[title:Visualize]
+  - ExportScheme[title:Export Scheme to JSON]
+  - LoadScheme[title:Load Scheme from JSON]
