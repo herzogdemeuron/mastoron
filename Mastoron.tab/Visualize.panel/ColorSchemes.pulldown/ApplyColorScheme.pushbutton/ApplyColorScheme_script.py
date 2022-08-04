@@ -21,20 +21,20 @@ if not selectedSwitch:
 selectedOption = options[selectedSwitch]
 schemeName = selectedOption.name
 
-values = set()
+keys = set()
 for item in selection:
-    value = _(item).get(schemeName)
+    key = _(item).get(schemeName)
     if str(selectedOption.type) == 'Invalid':
-        value = _(revitron.DOC.GetElement(value)).get('Name')
-    values.add(value)
+        key = _(revitron.DOC.GetElement(key)).get('Name')
+    keys.add(key)
 
 scheme = ColorScheme().load(schemeName)
 if not scheme:
-    scheme = ColorScheme().generate(schemeName, values)
+    scheme = ColorScheme().generate(schemeName, keys)
     if not scheme:
         sys.exit()
 elif scheme:
-    ColorScheme.update(scheme, values)
+    ColorScheme().update(scheme, keys)
 
 ColorScheme().save(scheme)
 
@@ -43,9 +43,9 @@ patternId = filter.byClass('FillPatternElement').noTypes().getElementIds()[0]
 
 with revitron.Transaction():
     for element in selection:
-        value = _(element).get(schemeName)
+        key = _(element).get(schemeName)
         if str(selectedOption.type) == 'Invalid':
-            value = _(revitron.DOC.GetElement(value)).get('Name')
-        colorHEX = scheme['data'][value]
+            key = _(revitron.DOC.GetElement(key)).get('Name')
+        colorHEX = scheme['data'][key]
         colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
         mastoron.ElementOverrides(element).set(colorRGB, patternId)

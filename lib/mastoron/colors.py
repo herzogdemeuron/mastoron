@@ -79,31 +79,6 @@ class ColorScheme:
         self.extendedColors = self.defaultColors + self.additionalColors
 
     @staticmethod
-    def update(colorScheme, values):
-        """
-        Updates a given color scheme with new values and default colors.
-
-        Args:
-            colorScheme (dict): The color scheme to update
-            values (set): The values to add
-
-        Returns:
-            dict: The updated color scheme
-        """
-        newValues = set()
-        for value in values:
-            if value not in colorScheme['data'].keys():
-                newValues.add(value)
-        
-        if newValues:
-            tempScheme = ColorScheme().generate('tempName', newValues)
-            if not tempScheme:
-                return None
-            colorScheme['data'].update(tempScheme['data'])
-
-        return colorScheme
-
-    @staticmethod
     def showExcel(scheme, path=None):
         """
         Shows a color schme in excel.
@@ -152,39 +127,51 @@ class ColorScheme:
 
         return scheme
 
-    def generate(self, schemeName, values):
+    def generate(self, schemeName, keys, excludeColors=None):
         """
         Generates a new color scheme.
 
         Args:
             schemeName (string): The name of the color scheme
-            values (set): The color scheme keys
+            keys (string): A set of keys
+            excludeColors (string, optional): A list of colors to exclude 
 
         Returns:
-            dict: A color scheme: {name: schemeName, data: {value: color}}
+            dict: A color scheme: {name: schemeName, data: {key: color}}
         """
-        import random
-        if len(values) <= len(self.defaultColors):
-            colors = random.sample(self.defaultColors, len(values))
-        elif len(values) <= len(self.extendedColors):
-            colors = random.sample(self.extendedColors, len(values))
-        elif len(values) <= 99:
-            hsvColors = ColorRange(len(values)).getHSV()
-            colors = []
-            for hsvColor in hsvColors:
-                rgbColor = Color.HSVtoRGB(hsvColor)
-                hexColor = Color.RGBtoHEX(rgbColor)
-                colors.append(hexColor)
-        else:
-            print('Too many values, colors are indistiguishable.')
-            return None
-
+        colors = ColorScheme().getColors(len(keys), excludeColors)
         scheme = {}
         scheme['name'] = schemeName
         scheme['data'] = {}
-        for value, color in zip(values, colors):
+        for value, color in zip(keys, colors):
             scheme['data'][value] = color
         return scheme
+
+    def update(self, colorScheme, keys):
+        """
+        Updates a given color scheme with new keys and default colors.
+
+        Args:
+            colorScheme (dict): The color scheme to update
+            keys (set): The keys to add
+
+        Returns:
+            dict: The updated color scheme
+        """
+        newkeys = set()
+        for key in keys:
+            if key not in colorScheme['data'].keys():
+                newkeys.add(key)
+        
+        if newkeys:
+            excludeColors = colorScheme['data'].values()
+            tempScheme = ColorScheme().generate(
+                'tempName', newkeys, excludeColors)
+            if not tempScheme:
+                return None
+            colorScheme['data'].update(tempScheme['data'])
+
+        return colorScheme
 
     def load(self, schemeName):
         """
@@ -220,6 +207,32 @@ class ColorScheme:
             writeSchemes.append(scheme)
         revitron.DocumentConfigStorage().set(self.COLOR_SCHEMES, writeSchemes)
     
+    def getColors(self, count, excludeColors=None):
+        import random
+        totalCount = count
+        if excludeColors:
+            totalCount = count + len(excludeColors)
+
+        if totalCount <= len(self.defaultColors):
+            availableColors = self.defaultColors
+        elif totalCount <= len(self.extendedColors):
+            availableColors = self.extendedColors
+        elif totalCount >= len(self.extendedColors) and totalCount < 100:
+            hsvColors = ColorRange(count).getHSV()
+            availableColors = []
+            for hsvColor in hsvColors:
+                rgbColor = Color.HSVtoRGB(hsvColor)
+                hexColor = Color.RGBtoHEX(rgbColor)
+                availableColors.append(hexColor)
+        else:
+            print('Too many keys, colors are indistiguishable.')
+            return None
+
+        if excludeColors:
+            availableColors = filter(lambda color: color not in excludeColors, availableColors)
+
+        colors = random.sample(availableColors, count)
+        return colors
 
 class ColorRange:
     """
