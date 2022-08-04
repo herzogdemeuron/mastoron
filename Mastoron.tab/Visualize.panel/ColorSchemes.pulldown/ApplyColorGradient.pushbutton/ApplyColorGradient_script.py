@@ -26,7 +26,7 @@ selection = revitron.Selection().get()
 if len(selection) < 1:
     sys.exit()
 
-options = mastoron.ProcessOptions(selection)
+options = mastoron.ProcessOptions(selection, staticParams=['Area'])
 if options:
     selectedSwitch = forms.CommandSwitchWindow.show(sorted(options),
         message='Visualize parameter:')

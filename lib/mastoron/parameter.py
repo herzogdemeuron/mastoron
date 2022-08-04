@@ -1,6 +1,6 @@
 import revitron
 
-def ProcessOptions(elements):
+def ProcessOptions(elements, staticParams=None):
     """
     Generates a list of all shared paramters from a given set of elements.
     The output of this function is intended to be used with the CommandSwitchWindow from pyRevit forms.
@@ -37,4 +37,12 @@ def ProcessOptions(elements):
         for paramSet in paramSets[1:]:
             allSharedParams = allSharedParams.intersection(paramSet)
 
+        if staticParams:
+            allStaticParams = set()
+            for paramSet in paramSets:
+                for param in paramSet:
+                    if param.name in staticParams:
+                        allStaticParams.add(param)
+            allSharedParams = allSharedParams | allStaticParams
+        
         return {'{}'.format(x.name): x for x in allSharedParams}
