@@ -23,7 +23,10 @@ schemeName = selectedOption.name
 
 keys = set()
 for item in selection:
-    key = _(item).get(schemeName)
+    if selectedOption.isInstance:
+        key = _(item).get(schemeName)
+    elif not selectedOption.isInstance:
+        key = _(revitron.DOC.GetElement(item.GetTypeId())).get(schemeName)
     if str(selectedOption.type) == 'Invalid':
         key = _(revitron.DOC.GetElement(key)).get('Name')
     keys.add(key)
@@ -43,7 +46,10 @@ patternId = filter.byClass('FillPatternElement').noTypes().getElementIds()[0]
 
 with revitron.Transaction():
     for element in selection:
-        key = _(element).get(schemeName)
+        if selectedOption.isInstance:
+            key = _(element).get(schemeName)
+        elif not selectedOption.isInstance:
+            key = _(revitron.DOC.GetElement(element.GetTypeId())).get(schemeName)
         if str(selectedOption.type) == 'Invalid':
             key = _(revitron.DOC.GetElement(key)).get('Name')
         colorHEX = scheme['data'][key]
