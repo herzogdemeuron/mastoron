@@ -35,6 +35,6 @@ def ProcessOptions(elements):
     if paramSets:
         allSharedParams = paramSets[0]
         for paramSet in paramSets[1:]:
-            alSsharedParams = allSharedParams.intersection(paramSet)
+            allSharedParams = allSharedParams.intersection(paramSet)
 
         return {'{}'.format(x.name): x for x in allSharedParams}
