@@ -16,7 +16,7 @@ def getKey(element, parameter, selectedOption):
     try:
         key = str(round(key, 3))
     except:
-        pass
+        key = str(key)
     return key
 
 selection = revitron.Selection().get()

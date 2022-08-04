@@ -25,9 +25,10 @@ def ProcessOptions(elements):
             sharedParams.add(ParamDef(pdef.Name, pdef.ParameterType, True))
 
         elType = revitron.DOC.GetElement(typeId)
-        for param in elType.ParametersMap:
-            pdef = param.Definition
-            sharedParams.add(ParamDef(pdef.Name, pdef.ParameterType, False))
+        if elType:
+            for param in elType.ParametersMap:
+                pdef = param.Definition
+                sharedParams.add(ParamDef(pdef.Name, pdef.ParameterType, False))
 
         paramSets.append(sharedParams)
 
