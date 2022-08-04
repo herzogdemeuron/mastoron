@@ -11,8 +11,13 @@ def getKey(element, parameter, selectedOption):
         key = _(element).get(parameter)
     elif not selectedOption.isInstance:
         key = _(revitron.DOC.GetElement(element.GetTypeId())).get(parameter)
-    if str(selectedOption.type) == 'Invalid':
-        key = _(revitron.DOC.GetElement(key)).get('Name')
+    if not key:
+        return None
+    if not isinstance(key, int):
+        if str(selectedOption.type) == 'Invalid':
+            if not _(key).getClassName() == 'ElemntId':
+                return None
+            key = _(revitron.DOC.GetElement(key)).get('Name')
     try:
         key = str(round(key, 3))
     except:
@@ -37,7 +42,8 @@ schemeName = selectedOption.name
 keys = set()
 for element in selection:
     key = getKey(element, schemeName, selectedOption)
-    keys.add(key)
+    if key:
+        keys.add(key)
 
 scheme = ColorScheme().load(schemeName)
 if not scheme:
@@ -54,7 +60,9 @@ patternId = filter.byClass('FillPatternElement').noTypes().getElementIds()[0]
 
 with revitron.Transaction():
     for element in selection:
+        mastoron.ElementOverrides(element).clear()
         key = getKey(element, schemeName, selectedOption)
-        colorHEX = scheme['data'][key]
-        colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
-        mastoron.ElementOverrides(element).set(colorRGB, patternId)
+        if key:
+            colorHEX = scheme['data'][key]
+            colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
+            mastoron.ElementOverrides(element).set(colorRGB, patternId)

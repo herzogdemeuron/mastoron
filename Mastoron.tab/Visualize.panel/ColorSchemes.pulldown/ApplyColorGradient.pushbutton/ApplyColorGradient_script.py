@@ -11,6 +11,8 @@ def getKey(element, parameter, selectedOption):
         key = _(element).get(parameter)
     elif not selectedOption.isInstance:
         key = _(revitron.DOC.GetElement(element.GetTypeId())).get(parameter)
+    if not key:
+        return None
     if str(selectedOption.type) == 'Invalid':
         print('Cannot apply gradient, choose number or text parameter.')
         sys.exit()
@@ -38,7 +40,8 @@ schemeName = selectedOption.name
 keys = set()
 for element in selection:
     key = getKey(element, schemeName, selectedOption)
-    keys.add(key)
+    if key:
+        keys.add(key)
 
 start, end = int((54.0 / 360) * 100), int((174.0 / 360) * 100)
 scheme = ColorScheme().generate(schemeName, keys, gradient=(start, end))
@@ -50,7 +53,9 @@ patternId = filter.byClass('FillPatternElement').noTypes().getElementIds()[0]
 
 with revitron.Transaction():
     for element in selection:
+        mastoron.ElementOverrides(element).clear()
         key = getKey(element, schemeName, selectedOption)
-        colorHEX = scheme['data'][key]
-        colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
-        mastoron.ElementOverrides(element).set(colorRGB, patternId)
+        if key:
+            colorHEX = scheme['data'][key]
+            colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
+            mastoron.ElementOverrides(element).set(colorRGB, patternId)
