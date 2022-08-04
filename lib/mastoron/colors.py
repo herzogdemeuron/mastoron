@@ -208,6 +208,16 @@ class ColorScheme:
         revitron.DocumentConfigStorage().set(self.COLOR_SCHEMES, writeSchemes)
     
     def getColors(self, count, excludeColors=None):
+        """
+        Gets a given amount of colors.
+
+        Args:
+            count (int): The number of colors to get
+            excludeColors (string, optional): List of colors to exclude. Defaults to None.
+
+        Returns:
+            string: A list of colors
+        """
         import random
         totalCount = count
         if excludeColors:
