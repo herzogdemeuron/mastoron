@@ -127,23 +127,31 @@ class ColorScheme:
 
         return scheme
 
-    def generate(self, schemeName, keys, excludeColors=None):
+    def generate(self, schemeName, keys, excludeColors=None, gradient=False):
         """
         Generates a new color scheme.
 
         Args:
             schemeName (string): The name of the color scheme
             keys (string): A set of keys
-            excludeColors (string, optional): A list of colors to exclude 
+            excludeColors (string, optional): A list of colors to exclude
+            gradient (int, optional): A tuple with start and end color
 
         Returns:
             dict: A color scheme: {name: schemeName, data: {key: color}}
         """
-        colors = ColorScheme().getColors(len(keys), excludeColors)
+        if not gradient:
+            colors = ColorScheme().getColors(len(keys), excludeColors)
+        elif gradient:
+            colorsHSV = ColorRange(len(keys), min=gradient[0], max=gradient[1]).getHSV()
+            colors = []
+            for hsv in colorsHSV:
+                rgb = Color.HSVtoRGB(hsv)
+                colors.append(Color.RGBtoHEX(rgb))
         scheme = {}
         scheme['name'] = schemeName
         scheme['data'] = {}
-        for value, color in zip(keys, colors):
+        for value, color in zip(sorted(keys), colors):
             scheme['data'][value] = color
         return scheme
 

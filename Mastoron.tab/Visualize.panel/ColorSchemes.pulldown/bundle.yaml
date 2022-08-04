@@ -1,5 +1,6 @@
 layout:
   - ApplyColorScheme[title:Apply Color Scheme]
+  - ApplyColorGradient[title:Apply Color Gradient]
   - -----
   - ExportScheme[title:Export Scheme to JSON]
   - LoadScheme[title:Load Scheme from JSON]
