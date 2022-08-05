@@ -56,6 +56,8 @@ class FloorCreator(Creator):
                                             min=True
                                             )
         levelElevation = self.level.Elevation
+        if not self.curveLoop:
+            return None
         if self.curveLoop.HasPlane:
             loopZ = self.curveLoop.GetPlane().Origin.Z
         else:

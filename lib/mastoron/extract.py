@@ -141,16 +141,17 @@ class LineExtractor(Extractor):
                 subcategoryLines.append(line)
         count = 0
         for line in subcategoryLines:
-            if count < len(subcategoryLines):
-                try:
-                    curveLoop.Append(line)
-                    count += 1
-                except:
+            for line in subcategoryLines:
+                if count < len(subcategoryLines):
                     try:
-                        curveLoop.Append(line.CreateReversed())
+                        curveLoop.Append(line)
                         count += 1
                     except:
-                        pass
+                        try:
+                            curveLoop.Append(line.CreateReversed())
+                            count += 1
+                        except:
+                            pass
         
         if curveLoop.IsOpen():
             print('Cannot create floor for {}'.format(self.element.Id))
