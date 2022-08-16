@@ -46,8 +46,6 @@ class ColorSchemeEditor(forms.CommandSwitchWindow):
         dlg.ShowDialog()
         return dlg.response
 
-print(forms.XAML_FILES_DIR)
-
 names = []
 for scheme in mastoron.ColorScheme().schemes:
     names.append(scheme['name'])
