@@ -1,1 +1,2 @@
 FLOOR_OFFSET = 'Height Offset From Level'
+ROUNDIND_DECIMALS = 2

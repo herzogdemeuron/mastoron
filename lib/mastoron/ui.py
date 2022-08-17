@@ -47,8 +47,9 @@ class ColorSwitchWindow(forms.CommandSwitchWindow):
     def colorButtons(self):
         for button in self.button_list.Children:
             key = button.Content
-            brush = BrushConverter().ConvertFrom(self.scheme['data'][key])
-            button.Background = brush
+            if key:
+                brush = BrushConverter().ConvertFrom(self.scheme['data'][key])
+                button.Background = brush
 
     @classmethod
     def show(cls, scheme,  #pylint: disable=W0221

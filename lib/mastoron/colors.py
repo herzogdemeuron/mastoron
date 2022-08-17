@@ -127,7 +127,7 @@ class ColorScheme:
 
         return scheme
 
-    def generate(self, schemeName, keys, excludeColors=None, gradient=False):
+    def generate(self, schemeName, keys, isInstance, excludeColors=None, gradient=False):
         """
         Generates a new color scheme.
 
@@ -150,6 +150,7 @@ class ColorScheme:
                 colors.append(Color.RGBtoHEX(rgb))
         scheme = {}
         scheme['name'] = schemeName
+        scheme['isInstance'] = isInstance
         scheme['data'] = {}
         for value, color in zip(sorted(keys), colors):
             scheme['data'][value] = color
