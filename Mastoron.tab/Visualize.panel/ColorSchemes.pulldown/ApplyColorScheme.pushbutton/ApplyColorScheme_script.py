@@ -4,6 +4,7 @@ import mastoron
 from mastoron import ColorScheme
 from revitron import _
 from pyrevit import forms
+from mastoron.variables import ROUNDIND_DECIMALS
 
 
 def getKey(element, parameter, selectedOption):
@@ -19,7 +20,7 @@ def getKey(element, parameter, selectedOption):
                 return None
             key = _(revitron.DOC.GetElement(key)).get('Name')
     try:
-        key = str(round(key, 3))
+        key = str(round(key, ROUNDIND_DECIMALS))
     except:
         key = str(key)
     return key
@@ -47,7 +48,7 @@ for element in selection:
 
 scheme = ColorScheme().load(schemeName)
 if not scheme:
-    scheme = ColorScheme().generate(schemeName, keys)
+    scheme = ColorScheme().generate(schemeName, keys, selectedOption.isInstance)
     if not scheme:
         sys.exit()
 elif scheme:
