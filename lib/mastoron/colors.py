@@ -127,7 +127,7 @@ class ColorScheme:
 
         return scheme
 
-    def generate(self, schemeName, keys, isInstance, excludeColors=None, gradient=False):
+    def generate(self, schemeName, keys, isInstance=None, excludeColors=None, gradient=False):
         """
         Generates a new color scheme.
 

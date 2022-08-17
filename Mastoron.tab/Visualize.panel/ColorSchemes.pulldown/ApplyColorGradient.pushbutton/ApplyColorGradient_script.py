@@ -44,7 +44,8 @@ for element in selection:
         keys.add(key)
 
 start, end = int((54.0 / 360) * 100), int((174.0 / 360) * 100)
-scheme = ColorScheme().generate(schemeName, keys, gradient=(start, end))
+scheme = ColorScheme().generate(
+    schemeName, keys, selectedOption, gradient=(start, end))
 if not scheme:
     sys.exit()
 
