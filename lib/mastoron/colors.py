@@ -1,9 +1,13 @@
+from .variables import DATA, IS_INSTANCE, NAME, PARAM_TYPE
 import revitron
+import mastoron
 import colorsys
 import os
 import json
+from revitron import _
 from pyrevit import forms
 from collections import defaultdict
+from mastoron.variables import MASTORON_COLORSCHEME
 
 
 class Color:
@@ -88,7 +92,7 @@ class ColorScheme:
             scheme (dict): The color scheme
             path (string, optinal): The output file path. Defaults to None.
         """
-        excel = ColorScheme.toExcel(scheme['data'], path)
+        excel = ColorScheme.toExcel(scheme[DATA], path)
         os.startfile(excel)
 
     @staticmethod
@@ -129,10 +133,14 @@ class ColorScheme:
         return scheme
 
     @staticmethod
-    def getFromUser():
+    def getFromUser(exclude=None):
+        if not type(exclude) == list:
+            exclude = [exclude]
+
         names = []
         for scheme in ColorScheme().schemes:
-            names.append(scheme['name'])
+            if not scheme[NAME] in exclude:
+                names.append(scheme[NAME])
 
         schemeName = forms.CommandSwitchWindow.show(sorted(names),
                 message='Choose Color Scheme:')
@@ -142,7 +150,38 @@ class ColorScheme:
 
         return ColorScheme().load(schemeName)
 
-    def generate(self, schemeName, keys, isInstance=None, excludeColors=None, gradient=False):
+    @staticmethod
+    def apply(elements, schemeName, isInstance, type, patternId):
+        
+        keys = set()
+        for element in elements:
+            key = mastoron.GetKey(element, schemeName, isInstance, type)
+            if key:
+                keys.add(key)
+
+        scheme = ColorScheme().load(schemeName)
+        if not scheme:
+            scheme = ColorScheme().generate(schemeName, keys, isInstance)
+            if not scheme:
+                return None
+        elif scheme:
+            ColorScheme().update(scheme, keys)
+
+        ColorScheme().save(scheme)
+
+        for element in elements:
+            key = mastoron.GetKey(element, schemeName, isInstance, type)
+            if key:
+                colorHEX = scheme[DATA][key]
+                colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
+                mastoron.ElementOverrides(element).set(colorRGB, patternId)
+                _(element).set(MASTORON_COLORSCHEME, scheme[NAME])
+            else:
+                mastoron.ElementOverrides(element).clear()
+                _(element).set(MASTORON_COLORSCHEME, '')
+
+    def generate(self, schemeName, keys,
+            isInstance=None, paramType=None, excludeColors=None, gradient=False):
         """
         Generates a new color scheme.
 
@@ -164,11 +203,12 @@ class ColorScheme:
                 rgb = Color.HSVtoRGB(hsv)
                 colors.append(Color.RGBtoHEX(rgb))
         scheme = {}
-        scheme['name'] = schemeName
-        scheme['isInstance'] = isInstance
-        scheme['data'] = {}
+        scheme[NAME] = schemeName
+        scheme[IS_INSTANCE] = isInstance
+        scheme[PARAM_TYPE] = paramType
+        scheme[DATA] = {}
         for value, color in zip(sorted(keys), colors):
-            scheme['data'][value] = color
+            scheme[DATA][value] = color
         return scheme
 
     def update(self, colorScheme, keys):
@@ -184,16 +224,16 @@ class ColorScheme:
         """
         newkeys = set()
         for key in keys:
-            if key not in colorScheme['data'].keys():
+            if key not in colorScheme[DATA].keys():
                 newkeys.add(key)
-        
+
         if newkeys:
-            excludeColors = colorScheme['data'].values()
+            excludeColors = colorScheme[DATA].values()
             tempScheme = ColorScheme().generate(
-                'tempName', newkeys, excludeColors)
+                'tempName', newkeys, excludeColors=excludeColors)
             if not tempScheme:
                 return None
-            colorScheme['data'].update(tempScheme['data'])
+            colorScheme[DATA].update(tempScheme[DATA])
 
         return colorScheme
 
@@ -208,7 +248,7 @@ class ColorScheme:
             dict: The color scheme
         """
         for scheme in self.schemes:
-            if scheme['name'] == schemeName:
+            if scheme[NAME] == schemeName:
                 return scheme
         return None
 
@@ -222,8 +262,8 @@ class ColorScheme:
         writeSchemes = []
         update = False
         for existingScheme in self.schemes:
-            if scheme['name'] == existingScheme['name']:
-                existingScheme['data'] = scheme['data']
+            if scheme[NAME] == existingScheme[NAME]:
+                existingScheme[DATA] = scheme[DATA]
                 update = True
             writeSchemes.append(existingScheme)
         
@@ -323,4 +363,5 @@ class ColorRange:
                                     ]:
             hsv.append((i, 0.5, 0.9))
         return hsv
+
 

@@ -4,6 +4,7 @@ import mastoron
 from mastoron import ColorScheme
 from mastoron.variables import MASTORON_COLORSCHEME
 from mastoron.variables import ROUNDING_DECIMALS
+from mastoron.variables import GRADIENTS
 from revitron import _
 from pyrevit import forms
 
@@ -51,7 +52,7 @@ scheme = ColorScheme().generate(
 if not scheme:
     sys.exit()
 
-scheme['name'] = 'Gradients'
+scheme['name'] = GRADIENTS
 ColorScheme().save(scheme)
 
 filter = revitron.Filter()

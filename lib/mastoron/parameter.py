@@ -1,4 +1,7 @@
 import revitron
+from revitron import _
+from .variables import NAME
+from .variables import ROUNDING_DECIMALS
 
 def ProcessOptions(elements, staticParams=None):
     """
@@ -46,3 +49,22 @@ def ProcessOptions(elements, staticParams=None):
             allSharedParams = allSharedParams | allStaticParams
         
         return {'{}'.format(x.name): x for x in allSharedParams}
+
+
+def GetKey(element, parameter, isInstance, type):
+    if isInstance:
+        key = _(element).get(parameter)
+    elif not isInstance:
+        key = _(revitron.DOC.GetElement(element.GetTypeId())).get(parameter)
+    if not key:
+        return None
+    if not isinstance(key, int):
+        if str(type) == 'Invalid':
+            if not _(key).getClassName() == 'ElemntId':
+                return None
+            key = _(revitron.DOC.GetElement(key)).get(NAME)
+    try:
+        key = str(round(key, ROUNDING_DECIMALS))
+    except:
+        key = str(key)
+    return key
