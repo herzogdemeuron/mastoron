@@ -2,6 +2,7 @@ import revitron
 import colorsys
 import os
 import json
+from pyrevit import forms
 from collections import defaultdict
 
 
@@ -126,6 +127,20 @@ class ColorScheme:
             scheme = json.load(f)
 
         return scheme
+
+    @staticmethod
+    def getFromUser():
+        names = []
+        for scheme in ColorScheme().schemes:
+            names.append(scheme['name'])
+
+        schemeName = forms.CommandSwitchWindow.show(sorted(names),
+                message='Choose Color Scheme:')
+
+        if not schemeName:
+            return None
+
+        return ColorScheme().load(schemeName)
 
     def generate(self, schemeName, keys, isInstance=None, excludeColors=None, gradient=False):
         """
@@ -252,6 +267,7 @@ class ColorScheme:
 
         colors = random.sample(availableColors, count)
         return colors
+
 
 class ColorRange:
     """

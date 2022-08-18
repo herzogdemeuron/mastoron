@@ -34,17 +34,9 @@ class ColorSchemeEditor(mastoron.ColorSwitchWindow):
         self.response = SAVE
 
 
-names = []
-for scheme in mastoron.ColorScheme().schemes:
-    names.append(scheme['name'])
-
-selection = forms.CommandSwitchWindow.show(sorted(names),
-        message='Choose Color Scheme:')
-
-if not selection:
+scheme = mastoron.ColorScheme.getFromUser()
+if not scheme:
     sys.exit()
-
-scheme = mastoron.ColorScheme().load(selection)
 
 while True:
     key = ColorSchemeEditor.show(scheme, message='Search Key:')

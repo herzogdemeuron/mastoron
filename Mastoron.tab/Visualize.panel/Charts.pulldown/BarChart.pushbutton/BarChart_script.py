@@ -88,17 +88,10 @@ class BarGraphWindow(mastoron.ColorSwitchWindow):
         return dlg.response
 
 
-names = []
-for scheme in mastoron.ColorScheme().schemes:
-    names.append(scheme['name'])
-
-schemeName = forms.CommandSwitchWindow.show(sorted(names),
-        message='Choose Color Scheme:')
-
-if not schemeName:
+scheme = mastoron.ColorScheme.getFromUser()
+if not scheme:
     sys.exit()
 
-scheme = mastoron.ColorScheme().load(schemeName)
 selection = revitron.Selection().get()
 
 if len(selection) < 1:
@@ -127,14 +120,14 @@ if not paramStorageType in NUMBER_PARAMS:
 paramTotals = {}
 for element in selection:
     if scheme['isInstance']:
-        key = _(element).get(schemeName)
+        key = _(element).get(scheme['name'])
         try:
             key = str(round(key, ROUNDIND_DECIMALS))
         except:
             key = str(key)
     else:
         elType = revitron.DOC.GetElement(element.GetTypeId())
-        key = _(elType).get(schemeName)
+        key = _(elType).get(scheme['name'])
         try:
             key = str(round(key, ROUNDIND_DECIMALS))
         except:
@@ -157,5 +150,5 @@ selectedParam = BarGraphWindow.show(
     scheme, paramTotals, dataParamName, message='Search Key:')
 
 if selectedParam:
-    elements = revitron.Filter(selection).byStringEquals(schemeName, selectedParam).getElementIds()
+    elements = revitron.Filter(selection).byStringEquals(scheme['name'], selectedParam).getElementIds()
     revitron.Selection().set(elements)
