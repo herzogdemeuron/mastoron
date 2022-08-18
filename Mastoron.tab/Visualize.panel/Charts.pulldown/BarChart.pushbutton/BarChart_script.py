@@ -3,7 +3,7 @@ import sys
 import mastoron
 import revitron
 import os.path as op
-from mastoron.variables import ROUNDIND_DECIMALS
+from mastoron.variables import ROUNDING_DECIMALS
 from revitron import _
 from pyrevit import forms
 from pyrevit import framework
@@ -80,7 +80,7 @@ class BarGraphWindow(mastoron.ColorSwitchWindow):
         dlg.title.Content = title
         for value in collections.OrderedDict(sortedTuples).values():
             label = framework.Controls.Label()
-            label.Content = str(round(value, ROUNDIND_DECIMALS))
+            label.Content = str(round(value, ROUNDING_DECIMALS))
             label.Foreground = Brushes.LightGray
             label.FontSize = 11.2
             dlg.valueList.Children.Add(label)
@@ -122,14 +122,14 @@ for element in selection:
     if scheme['isInstance']:
         key = _(element).get(scheme['name'])
         try:
-            key = str(round(key, ROUNDIND_DECIMALS))
+            key = str(round(key, ROUNDING_DECIMALS))
         except:
             key = str(key)
     else:
         elType = revitron.DOC.GetElement(element.GetTypeId())
         key = _(elType).get(scheme['name'])
         try:
-            key = str(round(key, ROUNDIND_DECIMALS))
+            key = str(round(key, ROUNDING_DECIMALS))
         except:
             key = str(key)
 

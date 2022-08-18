@@ -4,7 +4,8 @@ import mastoron
 from mastoron import ColorScheme
 from revitron import _
 from pyrevit import forms
-from mastoron.variables import ROUNDIND_DECIMALS
+from mastoron.variables import ROUNDING_DECIMALS
+from mastoron.variables import MASTORON_COLORSCHEME
 
 
 def getKey(element, parameter, selectedOption):
@@ -20,7 +21,7 @@ def getKey(element, parameter, selectedOption):
                 return None
             key = _(revitron.DOC.GetElement(key)).get('Name')
     try:
-        key = str(round(key, ROUNDIND_DECIMALS))
+        key = str(round(key, ROUNDING_DECIMALS))
     except:
         key = str(key)
     return key
@@ -67,3 +68,4 @@ with revitron.Transaction():
             colorHEX = scheme['data'][key]
             colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
             mastoron.ElementOverrides(element).set(colorRGB, patternId)
+            _(element).set(MASTORON_COLORSCHEME, scheme['name'])

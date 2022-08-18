@@ -1,2 +1,3 @@
 FLOOR_OFFSET = 'Height Offset From Level'
-ROUNDIND_DECIMALS = 2
+ROUNDING_DECIMALS = 2
+MASTORON_COLORSCHEME = 'mastoron.colorscheme'

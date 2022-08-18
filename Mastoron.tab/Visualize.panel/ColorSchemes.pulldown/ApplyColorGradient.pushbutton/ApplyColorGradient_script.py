@@ -2,6 +2,8 @@ import sys
 import revitron
 import mastoron
 from mastoron import ColorScheme
+from mastoron.variables import MASTORON_COLORSCHEME
+from mastoron.variables import ROUNDING_DECIMALS
 from revitron import _
 from pyrevit import forms
 
@@ -17,7 +19,7 @@ def getKey(element, parameter, selectedOption):
         print('Cannot apply gradient, choose number or text parameter.')
         sys.exit()
     try:
-        key = round(key, 3)
+        key = str(round(key, ROUNDING_DECIMALS))
     except:
         key = str(key)
     return key
@@ -45,9 +47,12 @@ for element in selection:
 
 start, end = int((54.0 / 360) * 100), int((174.0 / 360) * 100)
 scheme = ColorScheme().generate(
-    schemeName, keys, selectedOption, gradient=(start, end))
+    schemeName, keys, gradient=(start, end))
 if not scheme:
     sys.exit()
+
+scheme['name'] = 'Gradients'
+ColorScheme().save(scheme)
 
 filter = revitron.Filter()
 patternId = filter.byClass('FillPatternElement').noTypes().getElementIds()[0]
@@ -60,3 +65,4 @@ with revitron.Transaction():
             colorHEX = scheme['data'][key]
             colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
             mastoron.ElementOverrides(element).set(colorRGB, patternId)
+            _(element).set(MASTORON_COLORSCHEME, scheme['name'])
