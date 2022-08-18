@@ -13,8 +13,10 @@ xamlFilesDir = op.dirname(__file__)
 xamlSource = 'ColorSwitchWindow.xaml'
 
 while True:
-    key = mastoron.ColorSchemeEditor.show(
-        scheme, xamlFilesDir, xamlSource, message='Search Key:')
+    key = mastoron.ColorSchemeEditor.show(scheme,
+                                        xamlFilesDir,
+                                        xamlSource,
+                                        message='Search Key:')
     if not key:
         sys.exit()
     if key == SAVE:

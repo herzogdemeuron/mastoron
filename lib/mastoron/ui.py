@@ -105,8 +105,6 @@ class ColorSchemeEditor(ColorSwitchWindow):
         recognize_access_key (bool): recognize '_' as mark of access key
     '''
 
-    xaml_source = 'ColorSwitchWindow.xaml'
-
     def __init__(self,
                 context,
                 xamlFilesDir,
@@ -201,7 +199,7 @@ class BarGraphWindow(ColorSwitchWindow):
         sortedTuples = sorted(paramTotals.items(), key=operator.itemgetter(1))
         context = collections.OrderedDict(sortedTuples).keys()
         title = dataParamName + ' by ' + scheme['name']
-        
+
         dlg = cls(context,
                 xamlFilesDir,
                 xamlSource,
