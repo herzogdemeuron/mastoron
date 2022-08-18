@@ -1,7 +1,6 @@
 import clr
 import os.path as op
-from mastoron.variables import SAVE
-from mastoron.variables import ROUNDING_DECIMALS
+from .variables import DATA, SAVE, ROUNDING_DECIMALS
 from pyrevit import forms
 from pyrevit import framework
 from pyrevit.forms import WPFWindow
@@ -57,8 +56,11 @@ class ColorSwitchWindow(forms.CommandSwitchWindow):
         for button in self.button_list.Children:
             key = button.Content
             if key:
-                brush = BrushConverter().ConvertFrom(self.scheme['data'][key])
-                button.Background = brush
+                try:
+                    brush = BrushConverter().ConvertFrom(self.scheme[DATA][key])
+                    button.Background = brush
+                except:
+                    pass
 
     @classmethod
     def show(cls, 
