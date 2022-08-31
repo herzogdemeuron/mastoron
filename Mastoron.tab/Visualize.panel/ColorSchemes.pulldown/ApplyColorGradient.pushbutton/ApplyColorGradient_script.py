@@ -1,10 +1,12 @@
 import sys
+import json
 import revitron
 import mastoron
 from mastoron import ColorScheme
 from mastoron.variables import MASTORON_COLORSCHEME
 from mastoron.variables import ROUNDING_DECIMALS
 from mastoron.variables import GRADIENTS
+from mastoron.variables import NAME, DATA
 from revitron import _
 from pyrevit import forms
 
@@ -52,18 +54,22 @@ scheme = ColorScheme().generate(
 if not scheme:
     sys.exit()
 
-scheme['name'] = GRADIENTS
+scheme[NAME] = GRADIENTS
 ColorScheme().save(scheme)
 
 filter = revitron.Filter()
 patternId = filter.byClass('FillPatternElement').noTypes().getElementIds()[0]
+activeView = revitron.ACTIVE_VIEW
+overriddenElements = mastoron.AffectedElements.get(activeView)
 
 with revitron.Transaction():
     for element in selection:
-        mastoron.ElementOverrides(element).clear()
+        mastoron.ElementOverrides(activeView, element).clear()
         key = getKey(element, schemeName, selectedOption)
         if key:
-            colorHEX = scheme['data'][key]
+            colorHEX = scheme[DATA][key]
             colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
-            mastoron.ElementOverrides(element).set(colorRGB, patternId)
-            _(element).set(MASTORON_COLORSCHEME, scheme['name'])
+            mastoron.ElementOverrides(activeView, element).set(colorRGB, patternId)
+            overriddenElements[str(element.Id)] = scheme[NAME]
+    
+    _(activeView).set(MASTORON_COLORSCHEME, json.dumps(overriddenElements)) 

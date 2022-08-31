@@ -151,7 +151,7 @@ class ColorScheme:
         return ColorScheme().load(schemeName)
 
     @staticmethod
-    def apply(elements, schemeName, isInstance, type, patternId):
+    def apply(view, elements, schemeName, isInstance, type, patternId):
         
         keys = set()
         for element in elements:
@@ -168,17 +168,26 @@ class ColorScheme:
             ColorScheme().update(scheme, keys)
 
         ColorScheme().save(scheme)
+        
+        overriddenElements = mastoron.AffectedElements.get(view)
 
         for element in elements:
             key = mastoron.GetKey(element, schemeName, isInstance, type)
             if key:
                 colorHEX = scheme[DATA][key]
                 colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
-                mastoron.ElementOverrides(element).set(colorRGB, patternId)
-                _(element).set(MASTORON_COLORSCHEME, scheme[NAME])
+                mastoron.ElementOverrides(view, element).set(colorRGB, patternId)
+                overriddenElements[str(element.Id)] = scheme[NAME]
             else:
-                mastoron.ElementOverrides(element).clear()
-                _(element).set(MASTORON_COLORSCHEME, '')
+                mastoron.ElementOverrides(view, element).clear()
+                try:
+                    del overriddenElements[str(element.Id)]
+                except:
+                    pass
+        
+        _(view).set(MASTORON_COLORSCHEME, json.dumps(overriddenElements))  
+
+        return scheme
 
     def generate(self, schemeName, keys,
             isInstance=None, paramType=None, excludeColors=None, gradient=False):

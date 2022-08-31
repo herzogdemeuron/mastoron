@@ -5,6 +5,8 @@ from revitron import _
 from pyrevit import forms
 
 
+activeView = revitron.ACTIVE_VIEW
+
 selection = revitron.Selection().get()
 if len(selection) < 1:
     sys.exit()
@@ -24,8 +26,11 @@ filter = revitron.Filter()
 patternId = filter.byClass('FillPatternElement').noTypes().getElementIds()[0]
 
 with revitron.Transaction():
-    mastoron.ColorScheme.apply(selection,
+    scheme = mastoron.ColorScheme.apply(activeView,
+                    selection,
                     schemeName,
                     selectedOption.isInstance,
                     selectedOption.type,
                     patternId)
+
+    mastoron.AffectedViews().save(scheme, activeView.Id)
