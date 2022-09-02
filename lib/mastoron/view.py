@@ -57,7 +57,7 @@ class AffectedViews:
 
     def __init__(self):
         self.affectedViews = revitron.DocumentConfigStorage().get(
-            MASTORON_VIEWS, defaultdict())
+            MASTORON_VIEWS, [])
 
     def load(self, colorScheme):
         """
