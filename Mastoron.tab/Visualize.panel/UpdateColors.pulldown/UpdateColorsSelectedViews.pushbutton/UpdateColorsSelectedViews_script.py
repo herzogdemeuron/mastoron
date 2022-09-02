@@ -15,13 +15,11 @@ if not scheme:
 
 views = []
 viewsDict = {}
-for entry in mastoron.AffectedViews().affectedViews:
-    if entry[SCHEME_NAME] == scheme[NAME]:
-        for viewId in entry[VIEWS]:
-            elementId = revitron.DB.ElementId(int(viewId))
-            view = revitron.DOC.GetElement(elementId)
-            views.append(view.Name)
-            viewsDict[view.Name] = view
+for viewId in mastoron.AffectedViews().affectedViews[scheme[NAME]]:
+        elementId = revitron.DB.ElementId(int(viewId))
+        view = revitron.DOC.GetElement(elementId)
+        views.append(view.Name)
+        viewsDict[view.Name] = view
 
 viewsSelected = forms.SelectFromList.show(sorted(views),
         title='Choose views:', multiselect=True)

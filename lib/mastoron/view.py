@@ -57,7 +57,7 @@ class AffectedViews:
 
     def __init__(self):
         self.affectedViews = revitron.DocumentConfigStorage().get(
-            MASTORON_VIEWS, [])
+            MASTORON_VIEWS, defaultdict())
 
     def load(self, colorScheme):
         """
@@ -66,12 +66,7 @@ class AffectedViews:
         Args:
             colorScheme (dict): A color scheme
         """
-        views = []
-        for entry in self.affectedViews:
-            if entry[SCHEME_NAME] == colorScheme[NAME]:
-                views = entry[VIEWS]
-        
-        return views
+        return self.affectedViews[colorScheme[NAME]]
 
     def save(self, colorScheme, viewId):
         """
@@ -82,17 +77,11 @@ class AffectedViews:
             views (object): A set of Revit views
         """
         if not colorScheme[NAME] in self.affectedViews:
-            entry = {}
-            entry[SCHEME_NAME] = colorScheme[NAME]
-            entry[VIEWS] = [str(viewId)]
-            self.affectedViews.append(entry)
+            self.affectedViews[colorScheme[NAME]] = [str(viewId)]
 
         else: 
-            for entry in self.affectedViews:
-                if entry[SCHEME_NAME] == colorScheme[NAME]:
-                    if not str(viewId) in entry[VIEWS]:
-                        entry[VIEWS].append(str(viewId))
-                    break
+            if not str(viewId) in self.affectedViews[colorScheme[NAME]]:
+                self.affectedViews[colorScheme[NAME]].append(str(viewId))
 
         revitron.DocumentConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
 
