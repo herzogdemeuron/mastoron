@@ -85,6 +85,17 @@ class AffectedViews:
 
         revitron.DocumentConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
 
+    def delete(self, colorScheme, viewId):
+        """
+        Removes an affected view from the revitron DocumentConfigStorage.
+
+        Args:
+            colorScheme (dict): A mastoron color scheme
+            viewId (object or str): A Revit element id
+        """
+        self.affectedViews[colorScheme[NAME]].remove(str(viewId))
+        revitron.DocumentConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
+
 
 class AffectedElements:
     def __init__(self):
