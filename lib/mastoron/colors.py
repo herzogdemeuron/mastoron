@@ -280,7 +280,7 @@ class ColorScheme:
             writeSchemes.append(scheme)
         revitron.DocumentConfigStorage().set(self.COLOR_SCHEMES, writeSchemes)
     
-    def getColors(self, count, excludeColors=None):
+    def getColors(self, count, excludeColors=[]):
         """
         Gets a given amount of colors.
 
@@ -292,15 +292,20 @@ class ColorScheme:
             string: A list of colors
         """
         import random
-        totalCount = count
-        if excludeColors:
-            totalCount = count + len(excludeColors)
 
-        if totalCount <= len(self.defaultColors):
+        def filterColors(excludeColors, colors):
+            availableColors = filter(
+                lambda color: color not in excludeColors, colors)
+            return availableColors
+
+        self.defaultColors = filterColors(excludeColors, self.defaultColors)
+        self.extendedColors = filterColors(excludeColors, self.extendedColors)
+
+        if count <= len(self.defaultColors):
             availableColors = self.defaultColors
-        elif totalCount <= len(self.extendedColors):
+        elif count <= len(self.extendedColors):
             availableColors = self.extendedColors
-        elif totalCount >= len(self.extendedColors) and totalCount < 100:
+        elif count >= len(self.extendedColors) and count < 100:
             hsvColors = ColorRange(count).getHSV()
             availableColors = []
             for hsvColor in hsvColors:
@@ -310,9 +315,6 @@ class ColorScheme:
         else:
             print('Too many keys, colors are indistiguishable.')
             return None
-
-        if excludeColors:
-            availableColors = filter(lambda color: color not in excludeColors, availableColors)
 
         colors = random.sample(availableColors, count)
         return colors
