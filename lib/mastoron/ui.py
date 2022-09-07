@@ -53,6 +53,10 @@ class ColorSwitchWindow(forms.CommandSwitchWindow):
         self._setup(**kwargs)
 
     def colorButtons(self):
+        """
+        Sets the background color for all buttons according to the corresponding
+        hex value in color scheme. 
+        """
         for button in self.button_list.Children:
             key = button.Content
             if key:
@@ -163,6 +167,13 @@ class BarGraphWindow(ColorSwitchWindow):
                                             **kwargs)
 
     def resizeButtons(self, paramTotals):
+        """
+        Set the width of all buttons according to the total of the parameter values
+        it represents.
+
+        Args:
+            paramTotals (dict): {"<colorSchemeParamValue>":"<dataParamValueTotal>"}
+        """
         maxValue = max(paramTotals.values())
         scaleFactor =  (forms.DEFAULT_CMDSWITCHWND_WIDTH - 170) / maxValue
         for button in self.button_list.Children:
