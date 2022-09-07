@@ -294,9 +294,12 @@ class ColorScheme:
         import random
 
         def filterColors(excludeColors, colors):
-            availableColors = filter(
-                lambda color: color not in excludeColors, colors)
-            return availableColors
+            if excludeColors:
+                availableColors = filter(
+                    lambda color: color not in excludeColors, colors)
+                return availableColors
+            else:
+                 return colors
 
         self.defaultColors = filterColors(excludeColors, self.defaultColors)
         self.extendedColors = filterColors(excludeColors, self.extendedColors)
