@@ -103,6 +103,15 @@ class AffectedElements:
 
     @staticmethod
     def get(view):
+        """
+        Gets all Revit element ids of objects overridden by mastoron in given view.
+
+        Args:
+            view (object): A Revit view
+
+        Returns:
+            dict: {"<elementId>": "<nameOfColorScheme>", ... }
+        """
         paramValue = _(view).get(MASTORON_COLORSCHEME)
         if paramValue:
             overriddenElements = json.loads(paramValue)
@@ -112,6 +121,16 @@ class AffectedElements:
 
     @staticmethod
     def filter(elements, scheme):
+        """
+        Filters a dictionary of affected elements for a given color scheme.
+
+        Args:
+            elements (dict): {"<elementId>": "<nameOfColorScheme>", ... }
+            scheme (dict): A mastoron color scheme
+
+        Returns:
+            object: A list of Revit elements
+        """
         viewElements = []
         for id, value in elements.items():
             if value == scheme[NAME]:
