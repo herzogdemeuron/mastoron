@@ -39,6 +39,12 @@ class FaceExtractor(Extractor):
         super(FaceExtractor, self).__init__(element)    
     
     def getBottomFace(self):
+        """
+        Gets the lowest face in a list of Revit faces.
+
+        Returns:
+            object: A Revit face
+        """
         selectedFace = None
         selectedPoint = 999999999
         for face in self.faces:
@@ -50,10 +56,22 @@ class FaceExtractor(Extractor):
         return selectedFace
 
     def getBottomFaces(self):
+        """
+        Gets all downward facing faces in a list of Revit faces.
+
+        Returns:
+            object: A list of Revit faces
+        """
         bottomFaces = self._getFaces(revitron.DB.XYZ(0, 0, -1))
         return bottomFaces
 
     def getTopFace(self):
+        """
+        Get the highes face in a list of Revit faces.
+
+        Returns:
+            object: A Revit face
+        """
         selectedFace = None
         selectedPoint = -999999999
         for face in self.faces:
@@ -65,10 +83,25 @@ class FaceExtractor(Extractor):
         return selectedFace
 
     def getTopFaces(self):
+        """
+        Get all upward facing faces in a list of Reevit faces.
+
+        Returns:
+            object: A list of Revit faces
+        """
         topFaces = self._getFaces(revitron.DB.XYZ(0, 0, 1))
         return topFaces
 
     def _getFaces(self, vector):
+        """
+        Internal function for getting faces by their normal vector.
+
+        Args:
+            vector (object): A Revit XYZ object
+
+        Returns:
+            object: A list of Revit faces
+        """
         faces = []
         for face in self.faces:
             normal = face.ComputeNormal(revitron.DB.UV(0.5, 0.5))
