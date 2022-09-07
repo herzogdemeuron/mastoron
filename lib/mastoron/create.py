@@ -31,6 +31,12 @@ class FloorCreator(Creator):
         super(FloorCreator, self).__init__(docLevels, element, floorType)
     
     def fromBottomFaces(self):
+        """
+        Creates Revit floor objects from all downward facing faces of given element.
+
+        Returns:
+            object: A list of Revit floors
+        """
         faces = mastoron.FaceExtractor(self.element).getBottomFaces()
         self.level = mastoron.Level.getLevel(
                                             self.element,
@@ -49,6 +55,15 @@ class FloorCreator(Creator):
         return floors
 
     def fromFamilyModelLines(self, subcategory):
+        """
+        Create a Revit floor object from model lines of a subcategory for given element.
+
+        Args:
+            subcategory (string): The name of a subcategory
+
+        Returns:
+            object: A Revit floor
+        """
         self.curveLoop = mastoron.LineExtractor(self.element).bySubcategory(subcategory)
         self.level = mastoron.Level.getLevel(
                                             self.element,
@@ -67,6 +82,12 @@ class FloorCreator(Creator):
         return floor
     
     def _create(self):
+        """
+        Internal function for creating a Revit floor.
+
+        Returns:
+            object: A Revit floor
+        """
         self.curveLoop = List[revitron.DB.CurveLoop]([self.curveLoop])
         floor = revitron.DB.Floor.Create(
                                         revitron.DOC,
