@@ -11,6 +11,9 @@ activeView = revitron.ACTIVE_VIEW
 scheme = mastoron.ColorScheme.getFromUser()
 if not scheme:
     sys.exit()
+    
+if not str(activeView.Id) in mastoron.AffectedViews().affectedViews[scheme[NAME]]:
+    sys.exit()
 
 overriddenElements = mastoron.AffectedElements.get(activeView)
 
@@ -26,3 +29,4 @@ with revitron.Transaction():
             del overriddenElements[id]
     
     _(activeView).set(MASTORON_COLORSCHEME, json.dumps(overriddenElements)) 
+    mastoron.AffectedViews().delete(scheme, activeView.Id)
