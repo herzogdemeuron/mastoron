@@ -3,6 +3,7 @@ layout:
   - ApplyColorGradient[title:Apply Color Gradient]
   - -----
   - EditColorScheme[title:Edit Color Scheme]
+  - PurgeColorScheme[title:Purge Color Scheme]
   - -----
   - ExportScheme[title:Export Scheme to JSON]
   - LoadScheme[title:Load Scheme from JSON]

@@ -94,6 +94,9 @@ class AffectedViews:
             viewId (object or str): A Revit element id
         """
         self.affectedViews[colorScheme[NAME]].remove(str(viewId))
+        if len(self.affectedViews[colorScheme[NAME]]) == 0:
+            del self.affectedViews[colorScheme[NAME]]
+            
         revitron.DocumentConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
 
 
@@ -120,7 +123,18 @@ class AffectedElements:
         return overriddenElements
 
     @staticmethod
-    def filter(elements, scheme):
+    def set(view, overriddenElements):
+        """
+        Saves the colorscheme override information for affected elements to a Revit view.
+
+        Args:
+            view (object): A Revit view
+            elements (dict): {"<elementId>": "<nameOfColorScheme>", ... }
+        """
+        _(view).set(MASTORON_COLORSCHEME, json.dumps(overriddenElements))
+
+    @staticmethod
+    def filter(overriddenElements, scheme):
         """
         Filters a dictionary of affected elements for a given color scheme.
 
@@ -132,10 +146,36 @@ class AffectedElements:
             object: A list of Revit elements
         """
         viewElements = []
-        for id, value in elements.items():
+        for id, value in overriddenElements.items():
             if value == scheme[NAME]:
                 elementId = revitron.DB.ElementId(int(id))
                 element = revitron.DOC.GetElement(elementId)
                 viewElements.append(element)
         
         return viewElements
+
+    @staticmethod
+    def purge(view, scheme):
+        """
+        Deletes all overriddenElements for given color scheme stored in 
+        the mastoron config of given view.
+
+        Args:
+            view (object): A Revit view
+            scheme (dict): A mastoron color scheme
+        """
+        overriddenElements = AffectedElements.get(view)
+        for id, value in overriddenElements.items():
+            if value == scheme[NAME]:
+                del overriddenElements[id]
+        
+        AffectedElements.set(view, overriddenElements)
+        
+    @staticmethod
+    def delete(view, element):
+        overriddenElements = AffectedElements.get(view)
+        for id in overriddenElements.keys():
+            if id == str(element.Id):
+                del overriddenElements[id]
+        
+        AffectedElements.set(view, overriddenElements)

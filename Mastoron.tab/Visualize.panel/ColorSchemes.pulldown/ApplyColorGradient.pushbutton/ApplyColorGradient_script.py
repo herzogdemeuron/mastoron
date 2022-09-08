@@ -72,4 +72,5 @@ with revitron.Transaction():
             mastoron.ElementOverrides(activeView, element).set(colorRGB, patternId)
             overriddenElements[str(element.Id)] = scheme[NAME]
     
-    _(activeView).set(MASTORON_COLORSCHEME, json.dumps(overriddenElements)) 
+    mastoron.AffectedElements.set(activeView, overriddenElements)
+    mastoron.AffectedViews().save(scheme, activeView.Id)

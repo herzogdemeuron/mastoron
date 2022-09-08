@@ -279,7 +279,21 @@ class ColorScheme:
         if not update:
             writeSchemes.append(scheme)
         revitron.DocumentConfigStorage().set(self.COLOR_SCHEMES, writeSchemes)
-    
+
+    def delete(self, scheme):
+        """
+        Deletes a color scheme from the revitron DocumenConfigStorage.
+
+        Args:
+            scheme (dict): A color scheme
+        """
+        usedSchemes = []
+        for docScheme in self.schemes:
+            if not docScheme[NAME] == scheme[NAME]:
+                usedSchemes.append(docScheme)
+        
+        revitron.DocumentConfigStorage().set(self.COLOR_SCHEMES, usedSchemes)
+
     def getColors(self, count, excludeColors=[]):
         """
         Gets a given amount of colors.
