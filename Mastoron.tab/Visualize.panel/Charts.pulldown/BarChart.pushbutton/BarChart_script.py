@@ -46,19 +46,28 @@ for element in selection:
     if scheme['isInstance']:
         key = _(element).get(scheme['name'])
         try:
+            keyParamTypeId = _(element).getParameter(scheme['name']).unit
+            key = revitron.DB.UnitUtils.ConvertFromInternalUnits(
+                key, keyParamTypeId)
             key = str(round(key, ROUNDING_DECIMALS))
         except:
             key = str(key)
     else:
         elType = revitron.DOC.GetElement(element.GetTypeId())
+        keyParamTypeId = _(elType).getParameter(scheme['name']).unit
         key = _(elType).get(scheme['name'])
         try:
+            key = revitron.DB.UnitUtils.ConvertFromInternalUnits(
+                key, keyParamTypeId)
             key = str(round(key, ROUNDING_DECIMALS))
         except:
             key = str(key)
 
     if not dataParamName == COUNT:
+        dataParamTypeId = _(element).getParameter(dataParamName).unit
         value = _(element).get(dataParamName)
+        value = revitron.DB.UnitUtils.ConvertFromInternalUnits(
+                value, dataParamTypeId)
     else:
         value = 1
     
