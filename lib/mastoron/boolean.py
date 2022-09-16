@@ -81,8 +81,7 @@ class BooleanSketchBased(object):
         for list in nestedList:
             elements = []
             for item in list:
-                id = revitron.DB.ElementId(int(item))
-                elements.append(revitron.DOC.GetElement(id))
+                elements.append(mastoron.Convert.toRevitElement(item))
             out.append(elements)
         return out
 
