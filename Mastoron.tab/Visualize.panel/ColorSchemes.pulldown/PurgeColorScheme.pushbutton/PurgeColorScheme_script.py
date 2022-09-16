@@ -10,18 +10,15 @@ if not scheme:
     sys.exit()
 
 def clean(view, scheme):
-    for viewId in mastoron.AffectedViews().load(scheme):
-        viewElementId = revitron.DB.ElementId(int(viewId))
-        view = revitron.DOC.GetElement(viewElementId)
+    for viewId in mastoron.AffectedViews().get(scheme):
+        view = mastoron.Convert.toRevitElement(viewId)
         if view:
-            overriddenElements = mastoron.AffectedElements.get(view)
+            overriddenElements = mastoron.AffectedElements().get(scheme, viewId=viewId)
             if len(overriddenElements) < 1:
                 sys.exit()
             
-            overriddenElements = mastoron.AffectedElements.filter(
-                overriddenElements, scheme)
-
             cleaned = 0
+            overriddenElements = [mastoron.Convert.toRevitElement(x) for x in overriddenElements]
             for element in overriddenElements:
                 value = mastoron.GetKey(element,
                                         scheme[NAME],
@@ -39,7 +36,7 @@ def clean(view, scheme):
 
 affectedViews = None
 try:
-    affectedViews = mastoron.AffectedViews().load(scheme)
+    affectedViews = mastoron.AffectedViews().get(scheme)
 except:
     pass
 
@@ -49,15 +46,13 @@ if not affectedViews:
 else:
     with revitron.Transaction():
         usedSchemeKeys = set()
-        for viewId in affectedViews:
-            viewElementId = revitron.DB.ElementId(int(viewId))
-            view = revitron.DOC.GetElement(viewElementId)
+        for viewId in affectedViews.keys():
+            view = mastoron.Convert.toRevitElement(viewId)
             if not view:
                 continue
-            overriddenElements = mastoron.AffectedElements.get(view)
-            overriddenElements = mastoron.AffectedElements.filter(
-                        overriddenElements, scheme)
-            for element in overriddenElements:
+            overriddenElements = mastoron.AffectedElements().get(scheme, viewId=viewId)
+            for elementId in overriddenElements:
+                element = mastoron.Convert.toRevitElement(elementId)
                 value = mastoron.GetKey(element,
                                         scheme[NAME],
                                         scheme[IS_INSTANCE],
@@ -65,7 +60,6 @@ else:
                 usedSchemeKeys.add(value)
         
         for key in scheme[DATA].keys():
-            print(key)
             if key not in usedSchemeKeys:
                 del scheme[DATA][key]
 

@@ -133,14 +133,29 @@ class ColorScheme:
         return scheme
 
     @staticmethod
-    def getFromUser(exclude=None):
-        if not type(exclude) == list:
-            exclude = [exclude]
+    def getFromUser(excludeSchemes=None, excludeViews=None):
+        if not type(excludeSchemes) == list:
+            excludeSchemes = [excludeSchemes]
 
-        names = []
+        if excludeViews:
+            if not type(excludeViews) == list:
+                excludeViews = [excludeViews]
+
+        schemes = []
         for scheme in ColorScheme().schemes:
-            if not scheme[NAME] in exclude:
-                names.append(scheme[NAME])
+            if not scheme[NAME] in excludeSchemes:
+                schemes.append(scheme)
+
+        names = [scheme[NAME] for scheme in schemes]
+
+        if excludeViews:
+            for scheme in schemes:
+                for viewId in excludeViews:
+                    try:
+                        if not str(viewId) in mastoron.AffectedViews().get(scheme):
+                            names.remove(scheme[NAME])
+                    except:
+                        names.remove(scheme[NAME])
 
         schemeName = forms.CommandSwitchWindow.show(sorted(names),
                 message='Choose Color Scheme:')
@@ -169,7 +184,8 @@ class ColorScheme:
 
         ColorScheme().save(scheme)
         
-        overriddenElements = mastoron.AffectedElements.get(view)
+        overriddenElements = mastoron.AffectedElements().get(
+            scheme, viewId=view.Id)
 
         for element in elements:
             key = mastoron.GetKey(element, schemeName, isInstance, type)
@@ -177,16 +193,15 @@ class ColorScheme:
                 colorHEX = scheme[DATA][key]
                 colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
                 mastoron.ElementOverrides(view, element).set(colorRGB, patternId)
-                overriddenElements[str(element.Id)] = scheme[NAME]
+                overriddenElements.append(str(element.Id))
             else:
                 mastoron.ElementOverrides(view, element).clear()
                 try:
-                    del overriddenElements[str(element.Id)]
+                    overriddenElements.remove(str(element.Id))
                 except:
                     pass
         
-        _(view).set(MASTORON_COLORSCHEME, json.dumps(overriddenElements))  
-
+        mastoron.AffectedElements().dump(scheme, view.Id, overriddenElements)  
         return scheme
 
     def generate(self, schemeName, keys,

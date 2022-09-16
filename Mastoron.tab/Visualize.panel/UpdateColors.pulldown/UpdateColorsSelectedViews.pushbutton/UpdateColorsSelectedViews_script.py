@@ -9,21 +9,25 @@ from pyrevit import forms
 
 activeView = revitron.ACTIVE_VIEW
 
-scheme = mastoron.ColorScheme.getFromUser(exclude=GRADIENTS)
+scheme = mastoron.ColorScheme.getFromUser(excludeSchemes=GRADIENTS)
 if not scheme:
+    sys.exit()
+
+if not scheme[NAME] in mastoron.AffectedViews().affectedViews:
+    print('Color scheme "{}" is not applied in any view!'.format(scheme[NAME]))
     sys.exit()
 
 with revitron.Transaction():
     views = []
     viewsDict = {}
-    for viewId in mastoron.AffectedViews().affectedViews[scheme[NAME]]:
-            elementId = revitron.DB.ElementId(int(viewId))
-            view = revitron.DOC.GetElement(elementId)
-            if not view:
-                mastoron.AffectedViews().delete(scheme, viewId)
-                continue
-            views.append(view.Name)
-            viewsDict[view.Name] = view
+    affectedViews = mastoron.AffectedViews().get(scheme)
+    for viewId in affectedViews.keys():
+        view = mastoron.Convert.toRevitElement(viewId)
+        if not view:
+            mastoron.AffectedViews().delete(scheme, viewId)
+            continue
+        views.append(view.Name)
+        viewsDict[view.Name] = viewId
 
     viewsSelected = forms.SelectFromList.show(sorted(views),
             title='Choose views:', multiselect=True)
@@ -34,20 +38,15 @@ with revitron.Transaction():
     if not type(viewsSelected) == list:
         viewsSelected = [viewsSelected]
 
-    viewsElements = {}
-
-    for viewName in viewsSelected:
-        overriddenElements = mastoron.AffectedElements.get(activeView)
-        if len(overriddenElements) < 1:
-            continue
-        viewElements = mastoron.AffectedElements.filter(overriddenElements, scheme)
-        viewsElements[viewName] = viewElements
-
     filter = revitron.Filter()
     patternId = filter.byClass('FillPatternElement').noTypes().getElementIds()[0]
 
-    for viewName, elements in viewsElements.items():
-        mastoron.ColorScheme.apply(viewsDict[viewName],
+    for viewId, elementIds in affectedViews.items():
+        if viewId not in viewsDict.values():
+            continue
+        view = mastoron.Convert.toRevitElement(viewId)
+        elements = [mastoron.Convert.toRevitElement(x) for x in elementIds]
+        mastoron.ColorScheme.apply(view,
                         elements,
                         scheme[NAME],
                         scheme[IS_INSTANCE],
