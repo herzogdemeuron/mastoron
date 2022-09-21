@@ -52,6 +52,18 @@ def ProcessOptions(elements, staticParams=None):
 
 
 def GetKey(element, parameter, isInstance, type):
+    """
+    Gets the value of given parameter from either the given element or its type.
+
+    Args:
+        element (object): A Revit element
+        parameter (string): The name of the parameter
+        isInstance (bool): True for instance parameters, False for type parameters
+        type (string): The type of the parameter (Area, Number, Length, etc...)
+
+    Returns:
+        string: The value of the parameter
+    """
     if isInstance:
         key = _(element).get(parameter)
     elif not isInstance:
