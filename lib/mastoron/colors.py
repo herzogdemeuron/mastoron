@@ -123,6 +123,16 @@ class ColorScheme:
 
     @staticmethod
     def getFromUser(excludeSchemes=None, excludeViews=None):
+        """
+        Asks the user to select a mastoron color scheme.
+
+        Args:
+            excludeSchemes (string, optional): The name of one or more schemes to exclude. Defaults to None.
+            excludeViews (string, optional): The id(s) of one ore more views to exclude. Defaults to None.
+
+        Returns:
+            dict: The selected mastoron color scheme
+        """
         if not type(excludeSchemes) == list:
             excludeSchemes = [excludeSchemes]
 
@@ -156,7 +166,21 @@ class ColorScheme:
 
     @staticmethod
     def apply(view, elements, schemeName, isInstance, type, patternId):
-        
+        """
+        Applies a mastoron color scheme to given elements in given view.
+        Updates the colors scheme with new keys and colors.
+
+        Args:
+            view (object): A Revit view
+            elements (object): A list of Revit elements
+            schemeName (string): The name of the color scheme
+            isInstance (bool): True for instance parameters, false for type parameters
+            type (string): The type of the parameter (Area, Number, Length, etc..)
+            patternId (object): The Revit element id of the fillpattern to use
+
+        Returns:
+            dict: The applied and updated color scheme
+        """
         keys = set()
         for element in elements:
             key = mastoron.GetKey(element, schemeName, isInstance, type)
