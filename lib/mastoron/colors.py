@@ -1,4 +1,3 @@
-from .variables import DATA, IS_INSTANCE, NAME, PARAM_TYPE
 import revitron
 import mastoron
 import colorsys
@@ -7,7 +6,7 @@ import json
 from revitron import _
 from pyrevit import forms
 from collections import defaultdict
-from mastoron.variables import MASTORON_COLORSCHEME
+from .variables import DATA, IS_INSTANCE, NAME, PARAM_TYPE
 
 
 class Color:
