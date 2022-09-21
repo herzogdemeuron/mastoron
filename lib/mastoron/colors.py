@@ -83,17 +83,6 @@ class ColorScheme:
                             ]
         self.extendedColors = self.defaultColors + self.additionalColors
 
-    @staticmethod
-    def showExcel(scheme, path=None):
-        """
-        Shows a color schme in excel.
-
-        Args:
-            scheme (dict): The color scheme
-            path (string, optinal): The output file path. Defaults to None.
-        """
-        excel = ColorScheme.toExcel(scheme[DATA], path)
-        os.startfile(excel)
 
     @staticmethod
     def toJSON(data, path=JSON_PATH):
