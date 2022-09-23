@@ -1,4 +1,5 @@
 FLOOR_OFFSET = 'Height Offset From Level'
+ROOF_OFFSET = 'Base Offset From Level'
 ROUNDING_DECIMALS = 2
 MASTORON_COLORSCHEME = 'mastoron.colorscheme'
 MASTORON_VIEWS = 'mastoron.views'
