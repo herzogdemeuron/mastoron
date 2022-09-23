@@ -65,9 +65,16 @@ def GetKey(element, parameter, isInstance, type):
         string: The value of the parameter
     """
     if isInstance:
+        keyParamTypeId = _(element).getParameter(parameter).unit
         key = _(element).get(parameter)
+        key = revitron.DB.UnitUtils.ConvertFromInternalUnits(
+                key, keyParamTypeId)
     elif not isInstance:
-        key = _(revitron.DOC.GetElement(element.GetTypeId())).get(parameter)
+        elType = revitron.DOC.GetElement(element.GetTypeId())
+        keyParamTypeId = _(elType).getParameter(parameter).unit
+        key = _(elType).get(parameter)
+        key = revitron.DB.UnitUtils.ConvertFromInternalUnits(
+                key, keyParamTypeId)
     if not key:
         return None
     if not isinstance(key, int):
