@@ -1,4 +1,6 @@
 FLOOR_OFFSET = 'Height Offset From Level'
+WALL_OFFSET = 'Base Offset'
+WALL_HEIGHT = 'Unconnected Height'
 ROUNDING_DECIMALS = 2
 MASTORON_COLORSCHEME = 'mastoron.colorscheme'
 MASTORON_VIEWS = 'mastoron.views'
