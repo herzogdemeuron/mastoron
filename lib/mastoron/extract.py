@@ -102,7 +102,7 @@ class FaceExtractor(Extractor):
         verticalFaces = []
         for face in self.faces:
             normal = face.ComputeNormal(revitron.DB.UV(0.5, 0.5))
-            dotProduct = normal.DotProcut(revitron.DB.XYZ(0, 0, 1))
+            dotProduct = normal.DotProduct(revitron.DB.XYZ(0, 0, 1))
             if dotProduct == 0:
                 verticalFaces.append(face)
 
@@ -169,13 +169,30 @@ class BorderExtractor(Extractor):
         selectedCurve = None
         selectedPoint = 999999999
         for curve in curves:
-            point = curve.GetEndPoint(0)
+            point = curve.Evaluate(0.5, True)
             if point[2] < selectedPoint:
-                selectedPoint = point
+                selectedPoint = point[2]
                 selectedCurve = curve
 
         return selectedCurve
 
+    def getHighestEdge(self):
+        """
+        Gets the highest edge from a face.
+
+        Returns:
+            object: A Revit curve
+        """
+        curves = self.getBorder()
+        selectedCurve = None
+        selectedPoint = -999999999
+        for curve in curves:
+            point = curve.Evaluate(0.5, True)
+            if point[2] > selectedPoint:
+                selectedPoint = point[2]
+                selectedCurve = curve
+
+        return selectedCurve
 
 class LineExtractor(Extractor):
     """
