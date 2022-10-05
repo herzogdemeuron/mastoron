@@ -67,7 +67,7 @@ class FaceExtractor(Extractor):
 
     def getTopFace(self):
         """
-        Get the highes face in a list of Revit faces.
+        Get the highest face in a list of Revit faces.
 
         Returns:
             object: A Revit face
@@ -91,6 +91,22 @@ class FaceExtractor(Extractor):
         """
         topFaces = self._getFaces(revitron.DB.XYZ(0, 0, 1))
         return topFaces
+
+    def getVeticalFaces(self):
+        """
+        Get all vertical faces in a list of Revit faces.
+
+        Returns:
+            object: A list of Revit faces
+        """
+        verticalFaces = []
+        for face in self.faces:
+            normal = face.ComputeNormal(revitron.DB.UV(0.5, 0.5))
+            dotProduct = normal.DotProcut(revitron.DB.XYZ(0, 0, 1))
+            if dotProduct == 0:
+                verticalFaces.append(face)
+
+        return verticalFaces
 
     def _getFaces(self, vector):
         """
@@ -141,6 +157,24 @@ class BorderExtractor(Extractor):
             print('error')
             return None
         return lines[0]
+
+    def getLowestEdge(self):
+        """
+        Gets the lowest edge from a face.
+
+        Returns:
+            object: A Revit curve
+        """
+        curves = self.getBorder()
+        selectedCurve = None
+        selectedPoint = 999999999
+        for curve in curves:
+            point = curve.GetEndPoint(0)
+            if point[2] < selectedPoint:
+                selectedPoint = point
+                selectedCurve = curve
+
+        return selectedCurve
 
 
 class LineExtractor(Extractor):
