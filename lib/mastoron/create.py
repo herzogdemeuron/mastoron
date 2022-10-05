@@ -97,3 +97,43 @@ class FloorCreator(Creator):
                                         )
         _(floor).set(FLOOR_OFFSET, self.offset)
         return floor
+
+
+class WallCreator(Creator):
+    """
+    Inits a new WallCreator instance.
+    """
+    def __init__(self, docLevels, element, wallType):
+        super(WallCreator, self).__init__(docLevels, element, wallType)
+
+    def fromVerticalFaces(self):
+        """
+        Creates Revit wall objects from all vertical faces of given element.
+
+        Returns:
+            object: A list of Revit walls
+        """
+        faces = mastoron.FaceExtractor(self.element).getVeticalFaces()
+        self.level = mastoron.Level.getLevel(
+                                            self.element,
+                                            self.docLevels,
+                                            min=True
+                                            )
+        levelElevation = self.level.Elevation
+        walls = []
+        for face in faces:
+            self.curve = mastoron.BorderExtractor(face).getLowestEdge()
+            bBox = _(face).getBbox()
+            faceMin = bBox.Min[2]
+            faceMax = bBox.Max[2]
+            self.offset = faceMin - levelElevation
+            wall = revitron.DB.Wall.Create(
+                                        revitron.DOC,
+                                        self.curve,
+                                        self.level.Id
+                                        )
+            _(wall).set(WALL_OFFSET, self.offset)
+            height = faceMax - faceMin
+            _(wall).set(WALL_HEIGHT, height)
+            walls.append(wall)
+        return walls
