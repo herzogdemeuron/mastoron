@@ -123,6 +123,8 @@ class WallCreator(Creator):
         walls = []
         for face in faces:
             self.baseCurve = mastoron.BorderExtractor(face).getLowestEdge()
+            if not self.baseCurve.Direction[2] == 0:
+                continue
             self.topCurve = mastoron.BorderExtractor(face).getHighestEdge()
             faceMin = self.baseCurve.Origin[2]
             faceMax = self.topCurve.Origin[2]
