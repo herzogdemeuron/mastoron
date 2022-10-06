@@ -123,11 +123,11 @@ class WallCreator(Creator):
         walls = []
         for face in faces:
             self.baseCurve = mastoron.BorderExtractor(face).getLowestEdge()
-            if not self.baseCurve.Direction[2] == 0:
-                continue
             self.topCurve = mastoron.BorderExtractor(face).getHighestEdge()
-            faceMin = self.baseCurve.Origin[2]
-            faceMax = self.topCurve.Origin[2]
+            faceMin = self.baseCurve.GetEndPoint(0)[2]
+            if not faceMin == self.baseCurve.GetEndPoint(1)[2]:
+                continue
+            faceMax = self.topCurve.GetEndPoint(0)[2]
             self.offset = faceMin - levelElevation
             wall = revitron.DB.Wall.Create(
                                         revitron.DOC,
