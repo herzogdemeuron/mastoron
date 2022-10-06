@@ -138,5 +138,6 @@ class WallCreator(Creator):
             _(wall).set(WALL_OFFSET, self.offset)
             height = faceMax - faceMin
             _(wall).set(WALL_HEIGHT, height)
+            wall.Flip()
             walls.append(wall)
         return walls
