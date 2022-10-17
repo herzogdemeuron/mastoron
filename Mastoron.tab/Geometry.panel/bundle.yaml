@@ -1,4 +1,5 @@
 layout:
   - Floors[title:Floors]
   - Walls[title:Walls]
+  - Railings[title:Railings]
   - Boolean[title:Boolean]

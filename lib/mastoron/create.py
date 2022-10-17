@@ -141,3 +141,43 @@ class WallCreator(Creator):
             wall.Flip()
             walls.append(wall)
         return walls
+
+
+class RailingCreator(Creator):
+    """
+    Inits a new RailingCreator instance.
+    """
+    def __init__(self, docLevels, element, railingType):
+        super(RailingCreator, self).__init__(docLevels, element, railingType)
+
+    def fromTopFaces(self):
+        """
+        Creates Revit floor objects from all downward facing faces of given element.
+
+        Returns:
+            object: A list of Revit floors
+        """
+        faces = mastoron.FaceExtractor(self.element).getTopFaces()
+        self.level = mastoron.Level.getLevel(
+                                            self.element,
+                                            self.docLevels,
+                                            min=False
+                                            )
+        levelElevation = self.level.Elevation
+        uv = revitron.DB.UV(0.5, 0.5)
+        railings = []
+        for face in faces:
+            faceZ = face.Evaluate(uv).Z
+            self.offset = faceZ - levelElevation
+            self.curveLoop = mastoron.BorderExtractor(face).getBorder()
+            # railing = self._create()
+            self.curveLoop = List[revitron.DB.CurveLoop]([self.curveLoop])
+            railing = revitron.DB.Architecture.Railing.Create(
+                                            document=revitron.DOC,
+                                            curveLoop=self.curveLoop[0],
+                                            railingTypeId=self.elementType,
+                                            baseLevelId=self.level.Id
+                                            )
+            _(railing).set(BASE_OFFSET, self.offset)
+            railings.append(railing)
+        return railings
