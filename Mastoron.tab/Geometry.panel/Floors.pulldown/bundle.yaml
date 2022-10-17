@@ -1,3 +1,4 @@
 layout:
   - FloorsFromBottomFaces[title:Bottom Faces]
+  - FloorsFromTopFaces[title:Top Faces]
   - FloorsFromFamilyModelLines[title:Family Lines]

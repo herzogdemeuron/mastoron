@@ -81,6 +81,39 @@ class FloorCreator(Creator):
         floor = self._create()
         return floor
     
+    def fromTopFaces(self, offset=0.0):
+        """
+        Create a Revit floor object from all upward facing faces of given element.
+
+        Args:
+            offset (float, optional): The offset distance. Defaults to 0.0.
+
+        Returns:
+            object: A list of Revit floor objects
+        """
+        faces = mastoron.FaceExtractor(self.element).getTopFaces()
+        self.level = mastoron.Level.getLevel(
+                                            self.element,
+                                            self.docLevels,
+                                            min=False
+                                            )
+        levelElevation = self.level.Elevation
+        uv = revitron.DB.UV(0.5, 0.5)
+        floors = []
+        for face in faces:
+            faceZ = face.Evaluate(uv).Z
+            self.offset = faceZ - levelElevation
+            self.curveLoop = mastoron.BorderExtractor(face).getBorder()
+            if not offset == 0.0:
+                self.curveLoop = revitron.DB.CurveLoop.CreateViaOffset(
+                                                    self.curveLoop,
+                                                    offset,
+                                                    revitron.DB.XYZ(0, 0, 1))
+            floor = self._create()
+            floors.append(floor)
+        return floors
+
+
     def _create(self):
         """
         Internal function for creating a Revit floor.
@@ -152,10 +185,10 @@ class RailingCreator(Creator):
 
     def fromTopFaces(self):
         """
-        Creates Revit floor objects from all downward facing faces of given element.
+        Creates Revit railing objects from all upward facing faces of given element.
 
         Returns:
-            object: A list of Revit floors
+            object: A list of Revit railings
         """
         faces = mastoron.FaceExtractor(self.element).getTopFaces()
         self.level = mastoron.Level.getLevel(
