@@ -28,7 +28,6 @@ deleteInput = forms.alert(
     yes=True,
     no=True)
 
-
 if deleteInput:
     allParams = set()
     for element in selection:
@@ -39,7 +38,6 @@ if deleteInput:
         button_name='Select Item',
         title='Select Parameters to transfer:',
         multiselect=True)
-
 
 floors = []
 with revitron.Transaction():
