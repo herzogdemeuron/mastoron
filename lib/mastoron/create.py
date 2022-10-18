@@ -52,6 +52,7 @@ class FloorCreator(Creator):
             self.curveLoop = mastoron.BorderExtractor(face).getBorder()
             floor = self._create()
             floors.append(floor)
+
         return floors
 
     def fromFamilyModelLines(self, subcategory):
@@ -79,6 +80,7 @@ class FloorCreator(Creator):
             print('Cannot create floor from non-planar lines.')
         self.offset = loopZ - levelElevation
         floor = self._create()
+
         return floor
     
     def fromTopFaces(self, offset=0.0):
@@ -111,6 +113,7 @@ class FloorCreator(Creator):
                                                     revitron.DB.XYZ(0, 0, 1))
             floor = self._create()
             floors.append(floor)
+
         return floors
 
 
@@ -129,6 +132,7 @@ class FloorCreator(Creator):
                                         self.level.Id
                                         )
         _(floor).set(FLOOR_OFFSET, self.offset)
+
         return floor
 
 
@@ -173,6 +177,7 @@ class WallCreator(Creator):
             _(wall).set(WALL_HEIGHT, height)
             wall.Flip()
             walls.append(wall)
+
         return walls
 
 
@@ -185,7 +190,7 @@ class RailingCreator(Creator):
 
     def fromTopFaces(self):
         """
-        Creates Revit railing objects from all upward facing faces of given element.
+        Creates a Revit railing objects from the boundaries of all upward facing faces of given element.
 
         Returns:
             object: A list of Revit railings
@@ -203,7 +208,6 @@ class RailingCreator(Creator):
             faceZ = face.Evaluate(uv).Z
             self.offset = faceZ - levelElevation
             self.curveLoop = mastoron.BorderExtractor(face).getBorder()
-            # railing = self._create()
             self.curveLoop = List[revitron.DB.CurveLoop]([self.curveLoop])
             railing = revitron.DB.Architecture.Railing.Create(
                                             document=revitron.DOC,
@@ -213,4 +217,5 @@ class RailingCreator(Creator):
                                             )
             _(railing).set(BASE_OFFSET, self.offset)
             railings.append(railing)
+
         return railings
