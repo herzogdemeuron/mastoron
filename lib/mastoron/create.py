@@ -30,7 +30,7 @@ class FloorCreator(Creator):
     def __init__(self, docLevels, element, floorType):
         super(FloorCreator, self).__init__(docLevels, element, floorType)
     
-    def fromBottomFaces(self):
+    def fromBottomFaces(self, offset=0.0):
         """
         Creates Revit floor objects from all downward facing faces of given element.
 
@@ -50,6 +50,11 @@ class FloorCreator(Creator):
             faceZ = face.Evaluate(uv).Z
             self.offset = faceZ - levelElevation
             self.curveLoop = mastoron.BorderExtractor(face).getBorder()
+            if not offset == 0.0:
+                self.curveLoop = revitron.DB.CurveLoop.CreateViaOffset(
+                                                    self.curveLoop,
+                                                    offset,
+                                                    revitron.DB.XYZ(0, 0, 1))
             floor = self._create()
             floors.append(floor)
 
