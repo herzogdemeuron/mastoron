@@ -162,7 +162,7 @@ class WallCreator(Creator):
             self.baseCurve = mastoron.BorderExtractor(face).getLowestEdge()
             self.topCurve = mastoron.BorderExtractor(face).getHighestEdge()
             faceMin = self.baseCurve.GetEndPoint(0)[2]
-            if not faceMin == self.baseCurve.GetEndPoint(1)[2]:
+            if not round(faceMin, 5) == round(self.baseCurve.GetEndPoint(1)[2], 5):
                 continue
             faceMax = self.topCurve.GetEndPoint(0)[2]
             self.offset = faceMin - levelElevation

@@ -103,7 +103,7 @@ class FaceExtractor(Extractor):
         for face in self.faces:
             normal = face.ComputeNormal(revitron.DB.UV(0.5, 0.5))
             dotProduct = normal.DotProduct(revitron.DB.XYZ(0, 0, 1))
-            if dotProduct == 0:
+            if round(dotProduct, 5) == 0.0:
                 verticalFaces.append(face)
 
         return verticalFaces
