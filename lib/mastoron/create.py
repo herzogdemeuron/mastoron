@@ -170,17 +170,18 @@ class WallCreator(Creator):
             if not round(faceMin, 5) == round(self.baseCurve.GetEndPoint(1)[2], 5):
                 continue
             faceMax = self.topCurve.GetEndPoint(0)[2]
-            self.offset = faceMin - levelElevation
+            offset = faceMin - levelElevation
+            height = faceMax - faceMin
             wall = revitron.DB.Wall.Create(
                                         revitron.DOC,
                                         self.baseCurve,
+                                        self.elementType,
                                         self.level.Id,
+                                        height,
+                                        offset,
+                                        True,
                                         False
                                         )
-            _(wall).set(WALL_OFFSET, self.offset)
-            height = faceMax - faceMin
-            _(wall).set(WALL_HEIGHT, height)
-            wall.Flip()
             walls.append(wall)
 
         return walls
