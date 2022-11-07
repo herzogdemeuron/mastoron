@@ -152,11 +152,8 @@ class BorderExtractor(Extractor):
         Returns:
             iList: A Revit curve loop
         """
-        lines = self.face.GetEdgesAsCurveLoops()
-        if len(lines) > 1:
-            print('error')
-            return None
-        return lines[0]
+        loops = self.face.GetEdgesAsCurveLoops()
+        return loops
 
     def getLowestEdge(self):
         """

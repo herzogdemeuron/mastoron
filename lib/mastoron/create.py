@@ -27,9 +27,10 @@ class FloorCreator(Creator):
     """
     Inits a new FloorCreator instance.
     """
-    def __init__(self, docLevels, element, floorType, loopOffset=0.0):
+    def __init__(self, docLevels, element, floorType, loopOffset=0.0, offsetHoles=True):
         super(FloorCreator, self).__init__(docLevels, element, floorType)
         self.loopOffset = loopOffset
+        self.offsetHoles = offsetHoles
     
     def fromBottomFaces(self):
         """
@@ -50,7 +51,7 @@ class FloorCreator(Creator):
         for face in faces:
             faceZ = face.Evaluate(uv).Z
             self.offset = faceZ - levelElevation
-            self.curveLoop = mastoron.BorderExtractor(face).getBorder()
+            self.curveLoops = mastoron.BorderExtractor(face).getBorder()
             floor = self._create()
             if floor:
                 floors.append(floor)
@@ -107,7 +108,7 @@ class FloorCreator(Creator):
         for face in faces:
             faceZ = face.Evaluate(uv).Z
             self.offset = faceZ - levelElevation
-            self.curveLoop = mastoron.BorderExtractor(face).getBorder()
+            self.curveLoops = mastoron.BorderExtractor(face).getBorder()
             floor = self._create()
             if floor:
                 floors.append(floor)
@@ -122,29 +123,55 @@ class FloorCreator(Creator):
         Returns:
             object: A Revit floor
         """
-        if not self.curveLoop.IsCounterclockwise(revitron.DB.XYZ(0,0,1)):
-            self.curveLoop.Flip()
+        self.curveLoops = self._sanitizeLoops()
         if not self.loopOffset == 0.0:
-            try:
-                self.curveLoop = revitron.DB.CurveLoop.CreateViaOffset(
-                                                        self.curveLoop,
-                                                        self.loopOffset,
-                                                        revitron.DB.XYZ(0, 0, 1))
-            except:
-                print('Cannot create floor: Offset distance too large. Revit cannot handle self intersections')
-                return None
-
-        self.curveLoop = List[revitron.DB.CurveLoop]([self.curveLoop])
-        floor = revitron.DB.Floor.Create(
+            self.curveLoops = self._offsetLoops()
+        
+        try:
+            floor = revitron.DB.Floor.Create(
                                         revitron.DOC,
-                                        self.curveLoop,
+                                        self.curveLoops,
                                         self.elementType,
                                         self.level.Id
                                         )
+        except:
+            print('Cannot create floor: Offset distance probably resulted in overlapping loops.')
+            return None
+
         _(floor).set(FLOOR_OFFSET, self.offset)
 
         return floor
 
+    def _offsetLoops(self):
+        offsetLoops = []
+        for index, curveLoop in enumerate(self.curveLoops):
+            if index >= 1 and self.offsetHoles == False:
+                offsetLoops.append(curveLoop)
+                continue
+                
+            try:
+                offsetLoop = revitron.DB.CurveLoop.CreateViaOffset(
+                                                        curveLoop,
+                                                        self.loopOffset,
+                                                        revitron.DB.XYZ(0, 0, 1))
+                offsetLoops.append(offsetLoop)
+            except:
+                print('Cannot create floor: Offset distance too large. Revit cannot handle self intersections')
+        
+        return offsetLoops
+
+    def _sanitizeLoops(self):
+        sanitizedLoops = []
+        outerLoop = self.curveLoops[0]
+        if not outerLoop.IsCounterclockwise(revitron.DB.XYZ(0,0,1)):
+            outerLoop.Flip()
+        sanitizedLoops.append(outerLoop)
+
+        for curveLoop in self.curveLoops[1:]:
+            if curveLoop.IsCounterclockwise(revitron.DB.XYZ(0,0,1)):
+                curveLoop.Flip()
+            sanitizedLoops.append(curveLoop)
+        return sanitizedLoops
 
 class WallCreator(Creator):
     """
