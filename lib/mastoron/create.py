@@ -27,9 +27,9 @@ class FloorCreator(Creator):
     """
     Inits a new FloorCreator instance.
     """
-    def __init__(self, docLevels, element, floorType, offset=0.0):
+    def __init__(self, docLevels, element, floorType, loopOffset=0.0):
         super(FloorCreator, self).__init__(docLevels, element, floorType)
-        self.offset = offset
+        self.loopOffset = loopOffset
     
     def fromBottomFaces(self):
         """
@@ -52,7 +52,8 @@ class FloorCreator(Creator):
             self.offset = faceZ - levelElevation
             self.curveLoop = mastoron.BorderExtractor(face).getBorder()
             floor = self._create()
-            floors.append(floor)
+            if floor:
+                floors.append(floor)
 
         return floors
 
@@ -81,8 +82,8 @@ class FloorCreator(Creator):
             print('Cannot create floor from non-planar lines.')
         self.offset = loopZ - levelElevation
         floor = self._create()
-
-        return floor
+        if floor:
+            return floor
     
     def fromTopFaces(self):
         """
@@ -108,7 +109,8 @@ class FloorCreator(Creator):
             self.offset = faceZ - levelElevation
             self.curveLoop = mastoron.BorderExtractor(face).getBorder()
             floor = self._create()
-            floors.append(floor)
+            if floor:
+                floors.append(floor)
 
         return floors
 
@@ -122,11 +124,16 @@ class FloorCreator(Creator):
         """
         if not self.curveLoop.IsCounterclockwise(revitron.DB.XYZ(0,0,1)):
             self.curveLoop.Flip()
-        if not self.offset == 0.0:
+        if not self.loopOffset == 0.0:
+            try:
                 self.curveLoop = revitron.DB.CurveLoop.CreateViaOffset(
-                                                    self.curveLoop,
-                                                    offset,
-                                                    revitron.DB.XYZ(0, 0, 1))
+                                                        self.curveLoop,
+                                                        self.loopOffset,
+                                                        revitron.DB.XYZ(0, 0, 1))
+            except:
+                print('Cannot create floor: Offset distance too large. Revit cannot handle self intersections')
+                return None
+
         self.curveLoop = List[revitron.DB.CurveLoop]([self.curveLoop])
         floor = revitron.DB.Floor.Create(
                                         revitron.DOC,

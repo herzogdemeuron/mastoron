@@ -63,7 +63,6 @@ with revitron.Transaction():
         if selected_option == 'Top Faces':
             elementFloors = floorCreator.fromTopFaces()
         if selected_option == 'Bottom Faces':
-            # offsetDistance = offsetDistance * -1
             elementFloors = floorCreator.fromBottomFaces()
         if deleteInput:
             transferData = {}
@@ -74,7 +73,7 @@ with revitron.Transaction():
                 except:
                     pass
                 transferData[param] = transfervalue
-                
+
         if elementFloors:
             for floor in elementFloors:
                 floors.append(floor.Id)
