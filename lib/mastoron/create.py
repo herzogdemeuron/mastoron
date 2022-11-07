@@ -27,10 +27,11 @@ class FloorCreator(Creator):
     """
     Inits a new FloorCreator instance.
     """
-    def __init__(self, docLevels, element, floorType):
+    def __init__(self, docLevels, element, floorType, offset=0.0):
         super(FloorCreator, self).__init__(docLevels, element, floorType)
+        self.offset = offset
     
-    def fromBottomFaces(self, offset=0.0):
+    def fromBottomFaces(self):
         """
         Creates Revit floor objects from all downward facing faces of given element.
 
@@ -50,11 +51,6 @@ class FloorCreator(Creator):
             faceZ = face.Evaluate(uv).Z
             self.offset = faceZ - levelElevation
             self.curveLoop = mastoron.BorderExtractor(face).getBorder()
-            if not offset == 0.0:
-                self.curveLoop = revitron.DB.CurveLoop.CreateViaOffset(
-                                                    self.curveLoop,
-                                                    offset,
-                                                    revitron.DB.XYZ(0, 0, 1))
             floor = self._create()
             floors.append(floor)
 
@@ -88,7 +84,7 @@ class FloorCreator(Creator):
 
         return floor
     
-    def fromTopFaces(self, offset=0.0):
+    def fromTopFaces(self):
         """
         Create a Revit floor object from all upward facing faces of given element.
 
@@ -111,11 +107,6 @@ class FloorCreator(Creator):
             faceZ = face.Evaluate(uv).Z
             self.offset = faceZ - levelElevation
             self.curveLoop = mastoron.BorderExtractor(face).getBorder()
-            if not offset == 0.0:
-                self.curveLoop = revitron.DB.CurveLoop.CreateViaOffset(
-                                                    self.curveLoop,
-                                                    offset,
-                                                    revitron.DB.XYZ(0, 0, 1))
             floor = self._create()
             floors.append(floor)
 
@@ -129,6 +120,13 @@ class FloorCreator(Creator):
         Returns:
             object: A Revit floor
         """
+        if not self.curveLoop.IsCounterclockwise(revitron.DB.XYZ(0,0,1)):
+            self.curveLoop.Flip()
+        if not self.offset == 0.0:
+                self.curveLoop = revitron.DB.CurveLoop.CreateViaOffset(
+                                                    self.curveLoop,
+                                                    offset,
+                                                    revitron.DB.XYZ(0, 0, 1))
         self.curveLoop = List[revitron.DB.CurveLoop]([self.curveLoop])
         floor = revitron.DB.Floor.Create(
                                         revitron.DOC,

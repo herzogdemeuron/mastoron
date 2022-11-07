@@ -11,7 +11,11 @@ if len(selection) < 1:
 selected_option, switches = \
     forms.CommandSwitchWindow.show(
         ['Top Faces', 'Bottom Faces'],
-        switches=['Delete Input Geometry', 'Offset Boundary', 'Transfer Parameter Values'],
+        switches=[
+            'Delete Input Geometry',
+            'Offset Boundary',
+            'Transfer Parameter Values'
+            ],
         message='Select Option:',
         recognize_access_key=True
         )
@@ -54,11 +58,12 @@ doc = revitron.DOC
 floors = []
 with revitron.Transaction():
     for element in selection:
+        floorCreator =  mastoron.FloorCreator(levels, element, floorType, offsetDistance)
         if selected_option == 'Top Faces':
-            elementFloors = mastoron.FloorCreator(levels, element, floorType).fromTopFaces(offsetDistance)
+            elementFloors = floorCreator.fromTopFaces()
         if selected_option == 'Bottom Faces':
-            offsetDistance = offsetDistance * -1
-            elementFloors = mastoron.FloorCreator(levels, element, floorType).fromBottomFaces(offsetDistance)
+            # offsetDistance = offsetDistance * -1
+            elementFloors = floorCreator.fromBottomFaces()
         if deleteInput:
             transferData = {}
             for param in transferParams:
