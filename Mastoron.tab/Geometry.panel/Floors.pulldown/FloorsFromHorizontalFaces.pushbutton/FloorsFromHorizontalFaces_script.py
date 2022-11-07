@@ -59,6 +59,7 @@ floors = []
 with revitron.Transaction():
     for element in selection:
         floorCreator =  mastoron.FloorCreator(levels, element, floorType, offsetDistance)
+        elementFloors = None
         if selected_option == 'Top Faces':
             elementFloors = floorCreator.fromTopFaces()
         if selected_option == 'Bottom Faces':
@@ -73,13 +74,14 @@ with revitron.Transaction():
                 except:
                     pass
                 transferData[param] = transfervalue
-
-        for floor in elementFloors:
-            floors.append(floor.Id)
-            if deleteInput:
-                for param, value in transferData.items():
-                    if value:
-                        _(floor).set(param, value)
+                
+        if elementFloors:
+            for floor in elementFloors:
+                floors.append(floor.Id)
+                if deleteInput:
+                    for param, value in transferData.items():
+                        if value:
+                            _(floor).set(param, value)
 
         if deleteInput:
             _(element).delete()
