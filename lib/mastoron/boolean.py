@@ -26,9 +26,9 @@ class BooleanSketchBased(object):
             newSolid = self.makeBoolean(group)
             face = mastoron.FaceExtractor(newSolid).getBottomFace()
             level = mastoron.Level.getLevel(group[0], levels)
-            curveLoop = mastoron.BorderExtractor(face).getBorder()
-            curveLoop = List[revitron.DB.CurveLoop]([curveLoop])
-            self.newElements.append({'loop': curveLoop, 'level': level})
+            curveLoops = mastoron.BorderExtractor(face).getBorder()
+            # curveLoop = List[revitron.DB.CurveLoop]([curveLoop])
+            self.newElements.append({'loop': curveLoops, 'level': level})
 
     def getIntersects(self, elements):
         """
@@ -43,7 +43,7 @@ class BooleanSketchBased(object):
         groups = []
         for element in elements:
             group = [element]
-            for intersected in revitron.Filter().byIntersection(element).getElements():
+            for intersected in revitron.Filter(elements).byIntersection(element).getElements():
                 group.append(intersected)
             
             groups.append(group)
