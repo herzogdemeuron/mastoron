@@ -1,2 +1,3 @@
 tooltip: Create railings from top faces of selected geometries.
 help_url: 
+context: Selection

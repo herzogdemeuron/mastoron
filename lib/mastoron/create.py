@@ -226,7 +226,7 @@ class RailingCreator(Creator):
     def __init__(self, docLevels, element, railingType):
         super(RailingCreator, self).__init__(docLevels, element, railingType)
 
-    def fromTopFaces(self):
+    def fromTopFaces(self, includeInnerLoops):
         """
         Creates a Revit railing objects from the boundaries of all upward facing faces of given element.
 
@@ -245,15 +245,33 @@ class RailingCreator(Creator):
         for face in faces:
             faceZ = face.Evaluate(uv).Z
             self.offset = faceZ - levelElevation
-            self.curveLoop = mastoron.BorderExtractor(face).getBorder()
-            self.curveLoop = List[revitron.DB.CurveLoop]([self.curveLoop])
+            curveLoops = mastoron.BorderExtractor(face).getBorder()
+            innerLoops = []
+            for curveLoop in curveLoops:
+                if curveLoop.IsCounterclockwise(revitron.DB.XYZ(0,0,1)):
+                    outerLoop = curveLoop
+                else:
+                    innerLoops.append(curveLoop)
+                    
             railing = revitron.DB.Architecture.Railing.Create(
                                             document=revitron.DOC,
-                                            curveLoop=self.curveLoop[0],
+                                            curveLoop=outerLoop,
                                             railingTypeId=self.elementType,
                                             baseLevelId=self.level.Id
                                             )
-            _(railing).set(BASE_OFFSET, self.offset)
-            railings.append(railing)
+            if railing:
+                _(railing).set(BASE_OFFSET, self.offset)
+                railings.append(railing)
 
+            if includeInnerLoops:
+                for loop in innerLoops:
+                    railing = revitron.DB.Architecture.Railing.Create(
+                                                    document=revitron.DOC,
+                                                    curveLoop=loop,
+                                                    railingTypeId=self.elementType,
+                                                    baseLevelId=self.level.Id
+                                                    )
+                    if railing:
+                        _(railing).set(BASE_OFFSET, self.offset)
+                        railings.append(railing)
         return railings
