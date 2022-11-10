@@ -64,7 +64,7 @@ class ColorScheme:
         Inits a new ColorScheme instance.
         """
         self.COLOR_SCHEMES = 'mastoron.colorschemes'
-        self.schemes = revitron.DocumentConfigStorage().get(
+        self.schemes = mastoron.ConfigStorage().get(
             self.COLOR_SCHEMES, defaultdict())
         self.defaultColors = [
                             '#F44336', '#E91E63', '#9C27B0', '#673AB7',
@@ -305,7 +305,7 @@ class ColorScheme:
         
         if not update:
             writeSchemes.append(scheme)
-        revitron.DocumentConfigStorage().set(self.COLOR_SCHEMES, writeSchemes)
+        mastoron.ConfigStorage().set(self.COLOR_SCHEMES, writeSchemes)
 
     def delete(self, scheme):
         """
@@ -319,7 +319,7 @@ class ColorScheme:
             if not docScheme[NAME] == scheme[NAME]:
                 usedSchemes.append(docScheme)
         
-        revitron.DocumentConfigStorage().set(self.COLOR_SCHEMES, usedSchemes)
+        mastoron.ConfigStorage().set(self.COLOR_SCHEMES, usedSchemes)
 
     def getColors(self, count, excludeColors=[]):
         """

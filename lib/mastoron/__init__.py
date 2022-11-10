@@ -7,4 +7,5 @@ from colors import *
 from parameter import *
 from view import *
 from ui import *
-from  convert import *
+from convert import *
+from document import *

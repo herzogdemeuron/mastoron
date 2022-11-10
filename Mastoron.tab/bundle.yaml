@@ -1,0 +1,6 @@
+layout:
+  - Settings[title:Settings]
+  - Geometry[title:Geometry]
+  - Random[title:Random]
+  - Data[title:Data]
+  - Visualize[title:Visualize]

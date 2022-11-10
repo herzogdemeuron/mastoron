@@ -1,4 +1,5 @@
 import revitron
+import mastoron
 from revitron import _
 from collections import defaultdict
 from variables import NAME, MASTORON_VIEWS
@@ -55,7 +56,7 @@ class AffectedViews:
     """
 
     def __init__(self):
-        self.affectedViews = revitron.DocumentConfigStorage().get(
+        self.affectedViews = mastoron.ConfigStorage().get(
             MASTORON_VIEWS, defaultdict())
 
     def delete(self, colorScheme, viewId):
@@ -70,7 +71,7 @@ class AffectedViews:
         if len(self.affectedViews[colorScheme[NAME]]) == 0:
             del self.affectedViews[colorScheme[NAME]]
             
-        revitron.DocumentConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
+        mastoron.ConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
 
     def get(self, colorScheme):
         return self.affectedViews[colorScheme[NAME]]
@@ -82,7 +83,7 @@ class AffectedElements:
     """
 
     def __init__(self):
-        self.affectedViews = revitron.DocumentConfigStorage().get(
+        self.affectedViews = mastoron.ConfigStorage().get(
             MASTORON_VIEWS, defaultdict())
 
     def get(self, colorScheme, viewId=None):
@@ -129,7 +130,7 @@ class AffectedElements:
         
         overriddenElements = [str(x) for x in set(overriddenElements)]
         self.affectedViews[colorScheme[NAME]][str(viewId)] = overriddenElements
-        revitron.DocumentConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
+        mastoron.ConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
 
     @staticmethod
     def purge(view, scheme):
@@ -153,5 +154,5 @@ class AffectedElements:
         if len(self.affectedViews[colorScheme[NAME]][str(viewId)]) == 0:
             del self.affectedViews[colorScheme[NAME]][str(viewId)]
 
-        revitron.DocumentConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
+        mastoron.ConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
         
