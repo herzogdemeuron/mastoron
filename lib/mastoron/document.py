@@ -7,17 +7,17 @@ class ConfigStorage:
 	
 	Getting configuration items::
 	   
-	   config = mastoron.DocumentConfigStorage().get('namespace.item')
+	   config = mastoron.ConfigStorage().get('namespace.item')
 	   
 	The returned ``config`` item can be a **string**, a **number**, a **list** or a **dictionary**. 
 	It is also possible to define a default value in case the item is not defined in the config::
 
 		from collections import defaultdict
-		config = mastoron.DocumentConfigStorage().get('namespace.item', defaultdict())
+		config = mastoron.ConfigStorage().get('namespace.item', defaultdict())
 		
 	Setting configuration items works as follows::
 	
-		mastoron.DocumentConfigStorage().set('namespace.item', value)
+		mastoron.ConfigStorage().set('namespace.item', value)
 	
 	"""
 
@@ -25,9 +25,20 @@ class ConfigStorage:
 		"""
 		Inits a new ``ConfigStorage`` object.
         """
+		import os
+		import sys
+		from revitron import Log
 		self.configPath = revitron.DocumentConfigStorage().get('mastoron.configpath')
-		with open(self.configPath, 'r') as f:
-			self.config = json.load(f)
+		if self.configPath:
+			if os.path.exists(self.configPath):
+				with open(self.configPath, 'r') as f:
+					self.config = json.load(f)
+			else:
+				Log().error('Mastoron config file does not exist.')
+				sys.exit(1)
+		else:
+			Log().error('Set path to Mastoron configuration file.')
+			sys.exit(1)
 
 	def get(self, key, default=None):
 		"""
