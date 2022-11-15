@@ -4,11 +4,6 @@ import json
 from pyrevit import forms
 
 config = {}
-try:
-    config = mastoron.ConfigStorage().config
-except:
-    pass
-
 path = forms.save_file(file_ext='json', default_name='mastoronConfig')
 
 if path:
