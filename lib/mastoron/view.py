@@ -2,7 +2,7 @@ import json
 import revitron
 from revitron import _
 from collections import defaultdict
-from variables import NAME, SCHEME_NAME, VIEWS, MASTORON_VIEWS, MASTORON_COLORSCHEME
+from mastoron.variables import NAME, SCHEME_NAME, VIEWS, MASTORON_VIEWS, MASTORON_COLORSCHEME
 
 
 class ElementOverrides:

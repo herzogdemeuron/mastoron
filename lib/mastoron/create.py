@@ -1,7 +1,7 @@
 import mastoron
 import revitron
 from revitron import _
-from variables import *
+from mastoron.variables import *
 from System.Collections.Generic import List
 
 

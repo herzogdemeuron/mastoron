@@ -1,7 +1,7 @@
 import revitron
 from revitron import _
-from .variables import NAME
-from .variables import ROUNDING_DECIMALS
+from mastoron.variables import NAME
+from mastoron.variables import ROUNDING_DECIMALS
 
 def ProcessOptions(elements, staticParams=None):
     """

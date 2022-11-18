@@ -1,6 +1,6 @@
 import clr
 import os.path as op
-from .variables import DATA, SAVE, ROUNDING_DECIMALS
+from mastoron.variables import DATA, SAVE, ROUNDING_DECIMALS
 from pyrevit import forms
 from pyrevit import framework
 from pyrevit.forms import WPFWindow
