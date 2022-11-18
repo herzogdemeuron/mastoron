@@ -6,7 +6,7 @@
 Mastoron
 ========
 
-`Mastoron <https://github.com/mastoron/mastoron>`_ is a quality control extension for Revit based on 
+`Mastoron <https://github.com/mastoron/mastoron>`_ is an early design massing extension for Revit based on 
 `Revitron <https://github.com/revitron/revitron>`_ for 
 `PyRevit <https://github.com/eirannejad/pyRevit>`_.
 Both are required dependencies for this extension.
@@ -19,5 +19,6 @@ Both are required dependencies for this extension.
    :maxdepth: 2
    :caption: Contents:
 
+   colorschemes
    mastoron
    genindex
