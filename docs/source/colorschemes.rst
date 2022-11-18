@@ -6,6 +6,6 @@ Simply select all the objects and apply a color scheme for a parameter of your c
 
 Some of the most notable features are:
 
-    *Use the *Edit Color Scheme* button to change the colors in a scheme.
-    *Use the *Export* or *Import* buttons to share a color scheme from one model to another.
-    *Use the *Clear Colors* button to clear the color overrides for a specific color scheme in the current, or all views.
+    * Use the *Edit Color Scheme* button to change the colors in a scheme.
+    * Use the *Export* or *Import* buttons to share a color scheme from one model to another.
+    * Use the *Clear Colors* button to clear the color overrides for a specific color scheme in the current, or all views.
