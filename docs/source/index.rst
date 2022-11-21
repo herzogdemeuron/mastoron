@@ -19,6 +19,6 @@ Both are required dependencies for this extension.
    :maxdepth: 2
    :caption: Contents:
 
-   colorschemes
+   user-guide
    mastoron
    genindex
