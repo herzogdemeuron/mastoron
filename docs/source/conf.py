@@ -65,6 +65,7 @@ html_theme_options = {
 }
 
 html_logo = '_static/mastoron.png'
+html_favicon = '_static/mastoron.png'
 html_title = 'Mastoron'
 
 html_static_path = ['_static']
