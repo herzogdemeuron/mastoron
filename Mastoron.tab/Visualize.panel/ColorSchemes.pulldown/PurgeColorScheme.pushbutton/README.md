@@ -1,4 +1,3 @@
-# Button Help
+# Purge Color Scheme
 
-This *README* will be opened when the `F1` key is pressed while the mouse is hovering the button.
-The URL to this page can be defined in the `bundle.yaml` file in **this** directory as a value for the `help_url`.
+Deletes a color scheme and resets all element overrides in all views where this color scheme was applied. If you just want to reset the color overrides for the active view use [Clear Colors](../../ClearColors.pushbutton/READEME.md)
