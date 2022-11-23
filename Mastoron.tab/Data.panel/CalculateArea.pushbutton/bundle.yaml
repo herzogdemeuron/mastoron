@@ -1,2 +1,2 @@
-tooltip: Calculate the area of the lowest surface of selected elements.
-help_url: 
+tooltip: Calculate area sum of bottom faces.
+help_url: https://github.com/mastoron/mastoron/blob/master/Mastoron.tab/Data.panel/CalculateArea.pushbutton/README.md
