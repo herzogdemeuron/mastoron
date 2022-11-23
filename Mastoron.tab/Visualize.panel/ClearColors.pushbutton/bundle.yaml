@@ -1,2 +1,2 @@
-tooltip: Clears all element overrides from objects overridden by mastoron.
-help_url: 
+tooltip: Clear colors for a color scheme in current view.
+help_url: https://github.com/mastoron/mastoron/blob/master/Mastoron.tab/Visualize.panel/ClearColors.pushbutton/README.md
