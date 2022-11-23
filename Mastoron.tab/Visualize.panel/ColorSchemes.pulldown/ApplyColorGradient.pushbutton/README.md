@@ -1,4 +1,3 @@
-# Button Help
+# Apply Color Gradient
 
-This *README* will be opened when the `F1` key is pressed while the mouse is hovering the button.
-The URL to this page can be defined in the `bundle.yaml` file in **this** directory as a value for the `help_url`.
+Applies elements overrides to selected elements. The colors resemble a gradient and are determined by the values of the selected parameter sorted from small to large. 
