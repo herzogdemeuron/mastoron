@@ -1,4 +1,3 @@
-# Button Help
+# Calculate Level
 
-This *README* will be opened when the `F1` key is pressed while the mouse is hovering the button.
-The URL to this page can be defined in the `bundle.yaml` file in **this** directory as a value for the `help_url`.
+Finds the level that is closest to the selected elements lowest face and stores the name of the level in the *Mass Level* parameter.
