@@ -1,4 +1,6 @@
-# Button Help
+# Apply Color Scheme
 
-This *README* will be opened when the `F1` key is pressed while the mouse is hovering the button.
-The URL to this page can be defined in the `bundle.yaml` file in **this** directory as a value for the `help_url`.
+Applies color overrides the selected elements. The colors are assiged by the value of selected parameter. A set of default colors is used initially. The color-value pairs are stored as a mastoron colors scheme and can be adjusted using the [Edit Color Scheme](EditColorScheme.pushbutton/README.md) button.
+
+Every new value added to a color scheme will get a new default color assigned.
+The color overrides can be reset using the [Clear Colors](ClearColors.pushbutton/README.md) button
