@@ -1,4 +1,3 @@
-# Button Help
+# Load Color Scheme
 
-This *README* will be opened when the `F1` key is pressed while the mouse is hovering the button.
-The URL to this page can be defined in the `bundle.yaml` file in **this** directory as a value for the `help_url`.
+Imports a single color scheme from a JSON file. This could be an export from another project, or maybe some standard color palette that you use frequently. You could also prepare building-code related color schemes as templates that can be imported with this button.
