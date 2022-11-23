@@ -1,4 +1,3 @@
-# Button Help
+# Export Color Scheme
 
-This *README* will be opened when the `F1` key is pressed while the mouse is hovering the button.
-The URL to this page can be defined in the `bundle.yaml` file in **this** directory as a value for the `help_url`.
+Exports a single color scheme to a JSON file. This file can be imported into another project. You can also manually edit it to for example change the name of the parameter to apply the same colors to another parameter.
