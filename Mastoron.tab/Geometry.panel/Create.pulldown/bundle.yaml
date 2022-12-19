@@ -3,3 +3,4 @@ layout:
   - FloorsFromFamilyModelLines[title:Floors From Family Lines]
   - RoofsFromTopFaces[title:Roofs From Top Faces]
   - WallsFromVerticalFaces[title:Walls From Vertical Faces]
+  - RailingsFromTopFaces[title:Railings From Top Faces]
