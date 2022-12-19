@@ -143,6 +143,37 @@ class FloorCreator(Creator):
 
         return floor
 
+    def _offsetLoops(self):
+        offsetLoops = []
+        for index, curveLoop in enumerate(self.curveLoops):
+            if index >= 1 and self.offsetHoles == False:
+                offsetLoops.append(curveLoop)
+                continue
+                
+            try:
+                offsetLoop = revitron.DB.CurveLoop.CreateViaOffset(
+                                                        curveLoop,
+                                                        self.loopOffset,
+                                                        revitron.DB.XYZ(0, 0, 1))
+                offsetLoops.append(offsetLoop)
+            except:
+                print('Cannot create floor: Offset distance too large. Revit cannot handle self intersections')
+        
+        return offsetLoops
+
+    def _sanitizeLoops(self):
+        sanitizedLoops = []
+        outerLoop = self.curveLoops[0]
+        if not outerLoop.IsCounterclockwise(revitron.DB.XYZ(0,0,1)):
+            outerLoop.Flip()
+        sanitizedLoops.append(outerLoop)
+
+        for curveLoop in self.curveLoops[1:]:
+            if curveLoop.IsCounterclockwise(revitron.DB.XYZ(0,0,1)):
+                curveLoop.Flip()
+            sanitizedLoops.append(curveLoop)
+        return sanitizedLoops
+
 
 class RoofCreator(Creator):
     """
