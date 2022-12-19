@@ -162,7 +162,7 @@ class BorderExtractor(Extractor):
         Returns:
             object: A Revit curve
         """
-        curves = self.getBorder()
+        curves = self.getBorder()[0]
         selectedCurve = None
         selectedPoint = 999999999
         for curve in curves:
@@ -180,7 +180,7 @@ class BorderExtractor(Extractor):
         Returns:
             object: A Revit curve
         """
-        curves = self.getBorder()
+        curves = self.getBorder()[0]
         selectedCurve = None
         selectedPoint = -999999999
         for curve in curves:
