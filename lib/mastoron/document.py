@@ -37,7 +37,7 @@ class ConfigStorage:
 				Log().error('Mastoron config file does not exist.')
 				sys.exit(1)
 		else:
-			Log().error('Set path to Mastoron configuration file.')
+			Log().error('Use Settings button to set path to Mastoron configuration file.')
 			sys.exit(1)
 
 	def get(self, key, default=None):
