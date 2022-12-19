@@ -201,7 +201,7 @@ class RoofCreator(Creator):
         for face in faces:
             faceZ = face.Evaluate(uv).Z
             self.offset = faceZ - levelElevation
-            self.curveLoop = mastoron.BorderExtractor(face).getBorder()
+            self.curveLoops = mastoron.BorderExtractor(face).getBorder()
             roof = self._create()
             roofs.append(roof)
         return roofs
@@ -215,7 +215,8 @@ class RoofCreator(Creator):
         """
         import clr
         self.curveArray = revitron.DB.CurveArray()
-        for curve in self.curveLoop:
+        self.curveLoops = self._sanitizeLoops()
+        for curve in self.curveLoops[0]:
             self.curveArray.Append(curve)
         self.elementType = revitron.DOC.GetElement(self.elementType)
         ModelCurveArray = revitron.DB.ModelCurveArray
@@ -259,6 +260,7 @@ class RoofCreator(Creator):
                 curveLoop.Flip()
             sanitizedLoops.append(curveLoop)
         return sanitizedLoops
+
 
 class WallCreator(Creator):
     """
