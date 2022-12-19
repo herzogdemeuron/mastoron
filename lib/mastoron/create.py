@@ -1,5 +1,6 @@
 import mastoron
 import revitron
+import Autodesk.Revit.Creation as Creation
 from revitron import _
 from mastoron.variables import *
 from System.Collections.Generic import List
@@ -141,6 +142,61 @@ class FloorCreator(Creator):
         _(floor).set(FLOOR_OFFSET, self.offset)
 
         return floor
+
+
+class RoofCreator(Creator):
+    """
+    Inits a new RoofCreator instance.
+    """
+    def __init__(self, docLevels, element, roofType):
+        super(RoofCreator, self).__init__(docLevels, element, roofType)
+
+    def fromTopFaces(self):
+        """
+        Creates Revit roof objects from all upward facing faces of given element.
+
+        Returns:
+            object: A list of Revit roofs
+        """
+        faces = mastoron.FaceExtractor(self.element).getTopFaces()
+        self.level = mastoron.Level.getLevel(
+                                            self.element,
+                                            self.docLevels,
+                                            min=False
+                                            )
+        levelElevation = self.level.Elevation
+        uv = revitron.DB.UV(0.5, 0.5)
+        roofs = []
+        for face in faces:
+            faceZ = face.Evaluate(uv).Z
+            self.offset = faceZ - levelElevation
+            self.curveLoop = mastoron.BorderExtractor(face).getBorder()
+            roof = self._create()
+            roofs.append(roof)
+        return roofs
+
+    def _create(self):
+        """
+        Internal function for creating a Revit roof.
+
+        Returns:
+            object: A Revit roof
+        """
+        import clr
+        self.curveArray = revitron.DB.CurveArray()
+        for curve in self.curveLoop:
+            self.curveArray.Append(curve)
+        self.elementType = revitron.DOC.GetElement(self.elementType)
+        ModelCurveArray = revitron.DB.ModelCurveArray
+        self.modelCurveArray = clr.StrongBox[ModelCurveArray](ModelCurveArray())
+        roof = revitron.DOC.Create.NewFootPrintRoof(
+                                        self.curveArray,
+                                        self.level,
+                                        self.elementType,
+                                        self.modelCurveArray
+                                        )
+        _(roof).set(ROOF_OFFSET, self.offset)
+        return roof
 
     def _offsetLoops(self):
         offsetLoops = []

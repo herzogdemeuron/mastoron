@@ -60,7 +60,7 @@ ColorScheme().save(scheme)
 filter = revitron.Filter()
 patternId = filter.byClass('FillPatternElement').noTypes().getElementIds()[0]
 activeView = revitron.ACTIVE_VIEW
-overriddenElements = mastoron.AffectedElements.get(activeView)
+overriddenElements = mastoron.AffectedElements().get(scheme, viewId=activeView.Id)
 
 with revitron.Transaction():
     for element in selection:
@@ -70,7 +70,6 @@ with revitron.Transaction():
             colorHEX = scheme[DATA][key]
             colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
             mastoron.ElementOverrides(activeView, element).set(colorRGB, patternId)
-            overriddenElements[str(element.Id)] = scheme[NAME]
+            overriddenElements.append(element.Id)
     
-    mastoron.AffectedElements.set(activeView, overriddenElements)
-    mastoron.AffectedViews().save(scheme, activeView.Id)
+    mastoron.AffectedElements().dump(scheme, activeView.Id, overriddenElements)

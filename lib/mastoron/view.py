@@ -1,5 +1,5 @@
-import json
 import revitron
+import mastoron
 from revitron import _
 from collections import defaultdict
 from mastoron.variables import NAME, SCHEME_NAME, VIEWS, MASTORON_VIEWS, MASTORON_COLORSCHEME
@@ -56,34 +56,8 @@ class AffectedViews:
     """
 
     def __init__(self):
-        self.affectedViews = revitron.DocumentConfigStorage().get(
+        self.affectedViews = mastoron.ConfigStorage().get(
             MASTORON_VIEWS, defaultdict())
-
-    def load(self, colorScheme):
-        """
-        Loads all views affected by given color scheme.
-
-        Args:
-            colorScheme (dict): A color scheme
-        """
-        return self.affectedViews[colorScheme[NAME]]
-
-    def save(self, colorScheme, viewId):
-        """
-        Saves a set of affected views to the revitron DocumentConfigStorage.
-
-        Args:
-            colorScheme (dict): A color scheme
-            views (object): A set of Revit views
-        """
-        if not colorScheme[NAME] in self.affectedViews:
-            self.affectedViews[colorScheme[NAME]] = [str(viewId)]
-
-        else: 
-            if not str(viewId) in self.affectedViews[colorScheme[NAME]]:
-                self.affectedViews[colorScheme[NAME]].append(str(viewId))
-
-        revitron.DocumentConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
 
     def delete(self, colorScheme, viewId):
         """
@@ -93,66 +67,70 @@ class AffectedViews:
             colorScheme (dict): A mastoron color scheme
             viewId (object or str): A Revit element id
         """
-        self.affectedViews[colorScheme[NAME]].remove(str(viewId))
+        del self.affectedViews[colorScheme[NAME]][str(viewId)]
         if len(self.affectedViews[colorScheme[NAME]]) == 0:
             del self.affectedViews[colorScheme[NAME]]
             
-        revitron.DocumentConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
+        mastoron.ConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
+
+    def get(self, colorScheme):
+        return self.affectedViews[colorScheme[NAME]]
 
 
 class AffectedElements:
+    """
+    Class for handling elements affected by mastoron.
+    """
+
     def __init__(self):
-        pass
+        self.affectedViews = mastoron.ConfigStorage().get(
+            MASTORON_VIEWS, defaultdict())
 
-    @staticmethod
-    def get(view):
+    def get(self, colorScheme, viewId=None):
         """
-        Gets all Revit element ids of objects overridden by mastoron in given view.
+        Gets all Revit element ids of objects overridden by mastoron.
+
+        Returns::
+
+            If a viewId was provided a list of element ids.
+            if no viewId was provided a dict of view ids with the ids of 
+            overridden elements.
 
         Args:
-            view (object): A Revit view
+            colorScheme (dict): A mastoron colorScheme
+            viewId (Id or string, optional): A Revit element Id. Defaults to None.
 
         Returns:
-            dict: {"<elementId>": "<nameOfColorScheme>", ... }
+            mixed: dict or list
         """
-        paramValue = _(view).get(MASTORON_COLORSCHEME)
-        if paramValue:
-            overriddenElements = json.loads(paramValue)
+        if not colorScheme[NAME] in self.affectedViews:
+            self.affectedViews[colorScheme[NAME]] = {}
+
+        schemeViews = self.affectedViews[colorScheme[NAME]]
+        if viewId:
+            if not str(viewId) in schemeViews:
+                schemeViews[str(viewId)] = []
+
+            return schemeViews[str(viewId)]
         else:
-            overriddenElements = {}
-        return overriddenElements
+            return schemeViews
 
-    @staticmethod
-    def set(view, overriddenElements):
+    def dump(self, colorScheme, viewId, overriddenElements):
         """
-        Saves the colorscheme override information for affected elements to a Revit view.
+        Saves the colorscheme override information for affected elements to 
+        the Revitron document config.
 
         Args:
-            view (object): A Revit view
-            elements (dict): {"<elementId>": "<nameOfColorScheme>", ... }
+            colorScheme (dict): A mastoron color scheme
+            viewId (element id or string): A Revit element id
+            overriddenElements (string): A list of Revit element ids
         """
-        _(view).set(MASTORON_COLORSCHEME, json.dumps(overriddenElements))
-
-    @staticmethod
-    def filter(overriddenElements, scheme):
-        """
-        Filters a dictionary of affected elements for a given color scheme.
-
-        Args:
-            elements (dict): {"<elementId>": "<nameOfColorScheme>", ... }
-            scheme (dict): A mastoron color scheme
-
-        Returns:
-            object: A list of Revit elements
-        """
-        viewElements = []
-        for id, value in overriddenElements.items():
-            if value == scheme[NAME]:
-                elementId = revitron.DB.ElementId(int(id))
-                element = revitron.DOC.GetElement(elementId)
-                viewElements.append(element)
+        if not colorScheme[NAME] in self.affectedViews:
+            self.affectedViews[colorScheme[NAME]] = {}
         
-        return viewElements
+        overriddenElements = [str(x) for x in set(overriddenElements)]
+        self.affectedViews[colorScheme[NAME]][str(viewId)] = overriddenElements
+        mastoron.ConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
 
     @staticmethod
     def purge(view, scheme):
@@ -171,11 +149,10 @@ class AffectedElements:
         
         AffectedElements.set(view, overriddenElements)
         
-    @staticmethod
-    def delete(view, element):
-        overriddenElements = AffectedElements.get(view)
-        for id in overriddenElements.keys():
-            if id == str(element.Id):
-                del overriddenElements[id]
+    def delete(self, colorScheme, viewId, elementId):
+        self.affectedViews[colorScheme[NAME]][str(viewId)].remove(str(elementId))
+        if len(self.affectedViews[colorScheme[NAME]][str(viewId)]) == 0:
+            del self.affectedViews[colorScheme[NAME]][str(viewId)]
+
+        mastoron.ConfigStorage().set(MASTORON_VIEWS, self.affectedViews)
         
-        AffectedElements.set(view, overriddenElements)

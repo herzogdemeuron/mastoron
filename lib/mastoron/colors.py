@@ -65,7 +65,7 @@ class ColorScheme:
         Inits a new ColorScheme instance.
         """
         self.COLOR_SCHEMES = 'mastoron.colorschemes'
-        self.schemes = revitron.DocumentConfigStorage().get(
+        self.schemes = mastoron.ConfigStorage().get(
             self.COLOR_SCHEMES, defaultdict())
         self.defaultColors = [
                             '#F44336', '#E91E63', '#9C27B0', '#673AB7',
@@ -83,17 +83,6 @@ class ColorScheme:
                             ]
         self.extendedColors = self.defaultColors + self.additionalColors
 
-    @staticmethod
-    def showExcel(scheme, path=None):
-        """
-        Shows a color schme in excel.
-
-        Args:
-            scheme (dict): The color scheme
-            path (string, optinal): The output file path. Defaults to None.
-        """
-        excel = ColorScheme.toExcel(scheme[DATA], path)
-        os.startfile(excel)
 
     @staticmethod
     def toJSON(data, path=JSON_PATH):
@@ -133,14 +122,39 @@ class ColorScheme:
         return scheme
 
     @staticmethod
-    def getFromUser(exclude=None):
-        if not type(exclude) == list:
-            exclude = [exclude]
+    def getFromUser(excludeSchemes=None, excludeViews=None):
+        """
+        Asks the user to select a mastoron color scheme.
 
-        names = []
+        Args:
+            excludeSchemes (string, optional): The name of one or more schemes to exclude. Defaults to None.
+            excludeViews (string, optional): The id(s) of one ore more views to exclude. Defaults to None.
+
+        Returns:
+            dict: The selected mastoron color scheme
+        """
+        if not type(excludeSchemes) == list:
+            excludeSchemes = [excludeSchemes]
+
+        if excludeViews:
+            if not type(excludeViews) == list:
+                excludeViews = [excludeViews]
+
+        schemes = []
         for scheme in ColorScheme().schemes:
-            if not scheme[NAME] in exclude:
-                names.append(scheme[NAME])
+            if not scheme[NAME] in excludeSchemes:
+                schemes.append(scheme)
+
+        names = [scheme[NAME] for scheme in schemes]
+
+        if excludeViews:
+            for scheme in schemes:
+                for viewId in excludeViews:
+                    try:
+                        if not str(viewId) in mastoron.AffectedViews().get(scheme):
+                            names.remove(scheme[NAME])
+                    except:
+                        names.remove(scheme[NAME])
 
         schemeName = forms.CommandSwitchWindow.show(sorted(names),
                 message='Choose Color Scheme:')
@@ -152,7 +166,21 @@ class ColorScheme:
 
     @staticmethod
     def apply(view, elements, schemeName, isInstance, type, patternId):
-        
+        """
+        Applies a mastoron color scheme to given elements in given view.
+        Updates the colors scheme with new keys and colors.
+
+        Args:
+            view (object): A Revit view
+            elements (object): A list of Revit elements
+            schemeName (string): The name of the color scheme
+            isInstance (bool): True for instance parameters, false for type parameters
+            type (string): The type of the parameter (Area, Number, Length, etc..)
+            patternId (object): The Revit element id of the fillpattern to use
+
+        Returns:
+            dict: The applied and updated color scheme
+        """
         keys = set()
         for element in elements:
             key = mastoron.GetKey(element, schemeName, isInstance, type)
@@ -169,7 +197,8 @@ class ColorScheme:
 
         ColorScheme().save(scheme)
         
-        overriddenElements = mastoron.AffectedElements.get(view)
+        overriddenElements = mastoron.AffectedElements().get(
+            scheme, viewId=view.Id)
 
         for element in elements:
             key = mastoron.GetKey(element, schemeName, isInstance, type)
@@ -177,16 +206,15 @@ class ColorScheme:
                 colorHEX = scheme[DATA][key]
                 colorRGB = mastoron.Color.HEXtoRGB(colorHEX)
                 mastoron.ElementOverrides(view, element).set(colorRGB, patternId)
-                overriddenElements[str(element.Id)] = scheme[NAME]
+                overriddenElements.append(str(element.Id))
             else:
                 mastoron.ElementOverrides(view, element).clear()
                 try:
-                    del overriddenElements[str(element.Id)]
+                    overriddenElements.remove(str(element.Id))
                 except:
                     pass
         
-        _(view).set(MASTORON_COLORSCHEME, json.dumps(overriddenElements))  
-
+        mastoron.AffectedElements().dump(scheme, view.Id, overriddenElements)  
         return scheme
 
     def generate(self, schemeName, keys,
@@ -278,7 +306,7 @@ class ColorScheme:
         
         if not update:
             writeSchemes.append(scheme)
-        revitron.DocumentConfigStorage().set(self.COLOR_SCHEMES, writeSchemes)
+        mastoron.ConfigStorage().set(self.COLOR_SCHEMES, writeSchemes)
 
     def delete(self, scheme):
         """
@@ -292,7 +320,7 @@ class ColorScheme:
             if not docScheme[NAME] == scheme[NAME]:
                 usedSchemes.append(docScheme)
         
-        revitron.DocumentConfigStorage().set(self.COLOR_SCHEMES, usedSchemes)
+        mastoron.ConfigStorage().set(self.COLOR_SCHEMES, usedSchemes)
 
     def getColors(self, count, excludeColors=[]):
         """

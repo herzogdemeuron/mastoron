@@ -1,4 +1,5 @@
 FLOOR_OFFSET = 'Height Offset From Level'
+ROOF_OFFSET = 'Base Offset From Level'
 WALL_OFFSET = 'Base Offset'
 WALL_HEIGHT = 'Unconnected Height'
 ROUNDING_DECIMALS = 2

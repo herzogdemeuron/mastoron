@@ -52,19 +52,32 @@ def ProcessOptions(elements, staticParams=None):
 
 
 def GetKey(element, parameter, isInstance, type):
+    """
+    Gets the value of given parameter from either the given element or its type.
+
+    Args:
+        element (object): A Revit element
+        parameter (string): The name of the parameter
+        isInstance (bool): True for instance parameters, False for type parameters
+        type (string): The type of the parameter (Area, Number, Length, etc...)
+
+    Returns:
+        string: The value of the parameter
+    """
     if isInstance:
-        key = _(element).get(parameter)
+        elementParameter = _(element).getParameter(parameter)
     elif not isInstance:
-        key = _(revitron.DOC.GetElement(element.GetTypeId())).get(parameter)
+        elType = revitron.DOC.GetElement(element.GetTypeId())
+        elementParameter = _(elType).getParameter(parameter)
+
+    key = elementParameter.getValueString()
+
     if not key:
         return None
-    if not isinstance(key, int):
-        if str(type) == 'Invalid':
-            if not _(key).getClassName() == 'ElemntId':
-                return None
-            key = _(revitron.DOC.GetElement(key)).get(NAME)
-    try:
-        key = str(round(key, ROUNDING_DECIMALS))
-    except:
-        key = str(key)
+
+    if str(type) == 'Invalid':
+        if not _(key).getClassName() == 'ElemntId':
+            return None
+        key = _(revitron.DOC.GetElement(key)).get(NAME)
+
     return key

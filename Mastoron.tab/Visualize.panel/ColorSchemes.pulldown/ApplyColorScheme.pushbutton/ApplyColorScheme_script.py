@@ -32,5 +32,3 @@ with revitron.Transaction():
                     selectedOption.isInstance,
                     selectedOption.type,
                     patternId)
-
-    mastoron.AffectedViews().save(scheme, activeView.Id)
